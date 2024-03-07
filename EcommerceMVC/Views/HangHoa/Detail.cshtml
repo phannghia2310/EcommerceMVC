@@ -1,0 +1,169 @@
+﻿@model EcommerceMVC.ViewModels.ChiTietHangHoaVM
+
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+}
+
+<!-- Single Page Header start -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Chi tiết sản phẩm</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="HangHoa">Hàng hóa</a></li>
+        <li class="breadcrumb-item active text-white">Chi tiết sản phẩm</li>
+    </ol>
+</div>
+<!-- Single Page Header End -->
+
+<!-- Single Product Start -->
+<div class="container-fluid py-5 mt-5">
+    <div class="container py-5">
+        <div class="row g-4 mb-5">
+            <div class="col-lg-8 col-xl-9">
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="border rounded">
+                            <a asp-action="Detail" asp-controller="HangHoa" asp-route-id="@Model.MaHangHoa">
+                                <img src="~/Hinh/HangHoa/@Model.Hinh" class="img-fluid rounded" alt="@Model.Hinh">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <h4 class="fw-bold mb-3">@Model.TenHangHoa</h4>
+                        <p class="mb-3">Category: @Model.TenLoai</p>
+                        <h5 class="fw-bold mb-3">@Model.DonGia $</h5>
+                        <div class="d-flex mb-4">
+                            @for(var i=1; i<=5; i++)
+                            {
+                                if(i <= Model.DiemDanhGia)
+                                {
+                                    <i class="fa fa-star text-secondary"></i>
+                                }              
+                                else
+                                {
+                                    <i class="fa fa-star"></i>
+                                }
+                            }
+                        </div>
+                        <p class="mb-4">@Model.MoTaNgan</p>
+                        <form asp-action="AddToCart" asp-controller="Cart" asp-route-id="@Model.MaHangHoa">
+
+                            <div class="input-group quantity mb-5" style="width: 100px;">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-sm btn-minus rounded-circle bg-light border" type="button">
+                                        <i class="fa fa-minus"></i>
+                                    </button>
+                                </div>
+                                <input type="text" class="form-control form-control-sm text-center border-0" value="1" name="quantity">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-sm btn-plus rounded-circle bg-light border" type="button">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button href="#" class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Thêm vào giỏ</button>
+                        </form>
+                    </div>
+                    <div class="col-lg-12">
+                        <nav>
+                            <div class="nav nav-tabs mb-3">
+                                <button class="nav-link active border-white border-bottom-0" type="button" role="tab"
+                                        id="nav-about-tab" data-bs-toggle="tab" data-bs-target="#nav-about"
+                                        aria-controls="nav-about" aria-selected="true">
+                                    Thông tin hàng hóa
+                                </button>
+                                <button class="nav-link border-white border-bottom-0" type="button" role="tab"
+                                        id="nav-mission-tab" data-bs-toggle="tab" data-bs-target="#nav-mission"
+                                        aria-controls="nav-mission" aria-selected="false">
+                                    Đánh giá
+                                </button>
+                            </div>
+                        </nav>
+                        <div class="tab-content mb-5">
+                            <div class="tab-pane active" id="nav-about" role="tabpanel" aria-labelledby="nav-about-tab">
+                                <p>
+                                    @Model.ChiTiet
+                                </p> 
+                            </div>
+                            <div class="tab-pane" id="nav-mission" role="tabpanel" aria-labelledby="nav-mission-tab">
+                                @await Component.InvokeAsync("DanhGia", Model.MaHangHoa);
+                            </div>
+                        </div>
+                    </div>
+                    <form asp-action="PostComment" asp-controller="HangHoa" asp-route-id="@Model.MaHangHoa">
+                        <h4 class="mb-5 fw-bold">Để lại đánh giá</h4>
+                        @if(string.IsNullOrEmpty(ViewBag.CustomerId))
+                        {
+                            <div class="row justify-content-center align-content-center text-center">
+                                <h4>Bạn cần đăng nhập để đánh giá.</h4>
+                                <a asp-action="DangNhap" asp-controller="KhachHang" class="btn btn-outline-primary w-25">Đăng nhập ngay</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row g-4">
+                                <div class="col-lg-12">
+                                    <div class="border-bottom rounded my-4">
+                                        <textarea name="MoTa" id="MoTa" class="form-control border-0" cols="30" rows="8" placeholder="Viết đánh giá *" spellcheck="false"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="d-flex justify-content-between py-3 mb-5">
+                                        <div class="d-flex align-items-center">
+                                            <p class="mb-0 me-3">Đánh giá:</p>
+                                            <input type="hidden" id="rating" name="DiemDanhGia" value="0">
+                                            <div class="d-flex align-items-center" style="font-size: 12px;">
+                                                <i class="fa fa-star text-muted select-star" data-rating="1"></i>
+                                                <i class="fa fa-star text-muted select-star" data-rating="2"></i>
+                                                <i class="fa fa-star text-muted select-star" data-rating="3"></i>
+                                                <i class="fa fa-star text-muted select-star" data-rating="4"></i>
+                                                <i class="fa fa-star text-muted select-star" data-rating="5"></i>
+                                            </div>
+                                        </div>
+                                        <button class="btn border border-secondary text-primary rounded-pill px-4 py-3"> Đăng bài đánh giá</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-4 col-xl-3">
+                <div class="row g-4 fruite">
+                    <div class="col-lg-12">
+                        @await Html.PartialAsync("_TimKiemPanel")
+                        @await Component.InvokeAsync("MenuLoai")
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h1 class="fw-bold mb-0">Sản phẩm cùng loại</h1>
+        <div class="vesitable">
+            <div class="owl-carousel vegetable-carousel justify-content-center">
+                @await Component.InvokeAsync("SanPhamCungLoai", Model.TenLoai)
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Single Product End -->
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select-star').on('click', function () {
+                var rating = $(this).data('rating');
+                $('#rating').val(rating);
+                $('.select-star').each(function () {
+                    if ($(this).data('rating') <= rating) {
+                        $(this).removeClass('text-muted').addClass('text-warning');
+                        console.log(rating);
+                    } else {
+                        $(this).removeClass('text-warning').addClass('text-muted');
+                        console.log(rating);
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,43 @@
+﻿@model EcommerceMVC.ViewModels.KhachHangVM
+
+@{
+    ViewData["Title"] = "Xác thực email";
+}
+
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <h1 class="mb-4 text-center align-items-center justify-content-center"></h1>
+        <form asp-action="GuiMailXacThuc">
+            <div class="row g-5 justify-content-center align-items-center">
+                <div class="col-md-12 col-lg-6 col-xl-12" style="margin-left: 300px;">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-6">
+                            <div class="form-item w-100">
+                                <input asp-for="@Model.Email" type="email" placeholder="Nhập email của bạn" class="form-control">
+                                <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-6">
+                            <div class="form-item w-100">
+                                <button class="btn btn-primary border-3 border-primary rounded-circle">
+                                    <i class="fa fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        @if(!string.IsNullOrEmpty(ViewBag.EmailError))
+                        {
+                            <div class="col-md-12 col-lg-6 my-3 alert alert-danger">@ViewBag.EmailError</div>
+                        }
+                        @if (!string.IsNullOrEmpty(ViewBag.ErrorActivation))
+                        {
+                            <div class="col-md-12 col-lg-6 my-3 alert alert-danger">@ViewBag.ErrorActivation</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+

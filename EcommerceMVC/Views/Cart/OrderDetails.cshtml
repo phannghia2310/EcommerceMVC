@@ -1,0 +1,77 @@
+﻿@model IEnumerable<EcommerceMVC.ViewModels.ChiTietHdVM>
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+}
+
+<!-- Single Page Header start -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Chi tiết đơn hàng</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+        <li class="breadcrumb-item"><a asp-action="History" asp-controller="Cart">Lịch sử đặt hàng</a></li>
+        <li class="breadcrumb-item active text-white">Chi tiết đơn hàng</li>
+    </ol>
+</div>
+<!-- Single Page Header End -->
+
+
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <a asp-action="History" asp-controller="Cart"><i class="fa fa-arrow-left"></i> Trở lại</a>
+        <h1 class="mb-4 text-center align-items-center justify-content-center">Chi tiết đơn hàng: @ViewBag.MaHd</h1>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Mã chi tiết</th>
+                        <th scope="col">Tên sản phẩm</th>
+                        <th scope="col">Hình ảnh</th>
+                        <th scope="col">Đơn giá</th>
+                        <th scope="col">Số lượng</th>
+                        <th scope="col">Giảm giá</th>
+                        <th scope="col">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Count() < 0)
+                    {
+                        <tr>
+                            <td>Không có đơn hàng nào</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <p> @item.MaCT </p>
+                                </td>
+                                <td>
+                                    <p> @item.TenHh </p>
+                                </td>
+                                <td style="width:150px;">
+                                    <img src="~/Hinh/HangHoa/@item.Hinh" class="img-fluid w-50" alt="@item.TenHh"/>
+                                </td>
+                                <td>
+                                    <p> @item.DonGia </p>
+                                </td>
+                                <td>
+                                    <p> @item.SoLuong </p>
+                                </td>
+                                <td>
+                                    <p> @item.GiamGia </p>
+                                </td>
+                                <td>
+                                    <p> @item.ThanhTien </p>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </<div>
+</div>
+

@@ -1,0 +1,95 @@
+﻿@model IEnumerable<EcommerceMVC.ViewModels.HoaDonVM>
+
+@{
+    ViewData["Title"] = "Lịch sử đặt hàng";
+}
+
+<!-- Single Page Header start -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Đơn hàng của tôi</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+        <li class="breadcrumb-item active text-white">Lịch sử đặt hàng</li>
+    </ol>
+</div>
+<!-- Single Page Header End -->
+
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active">Chờ xác nhận</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link">Chờ lấy hàng</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link">Chờ giao hàng</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link">Hoàn thành</a>
+            </li>
+        </ul>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Mã đơn hàng</th>
+                        <th scope="col">Ngày đặt hàng</th>
+                        <th scope="col">Ngày giao (dự kiến)</th>
+                        <th scope="col">Thanh toán</th>
+                        <th scope="col">Trạng thái</th>
+                        <th scope="col">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if(Model.Count() < 0) {
+                        <tr>
+                            <td>Không có đơn hàng nào</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model.Where(hd => hd.MaTrangThai == 0))
+                        {
+                            <tr>
+                                <td>
+                                    <p>
+                                        @item.MaHd
+                                    </p>
+                                </td>
+                                <td>
+                                    <p>
+                                        @item.NgayDat
+                                    </p>
+                                </td>
+                                <td>
+                                    <p>
+                                        @item.NgayGiao
+                                    </p>
+                                </td>
+                                <td>
+                                    @if (item.CachThanhToan == "COD")
+                                    {
+                                        <div class="d-inline-block bg-warning p-1 rounded text-white text-center">chưa thanh toán</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-inline-block bg-success p-1 rounded text-white text-center">đã thanh toán</div>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-inline-block bg-warning p-1 rounded text-black text-center">chờ xác nhận</div>
+                                </td>
+                                <td>
+                                    <a asp-action="OrderDetails" asp-controller="Cart" asp-route-id="@item.MaHd" class="btn btn-outline-primary">Chi tiết</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </<div>
+</div>

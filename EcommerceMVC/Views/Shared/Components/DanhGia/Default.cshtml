@@ -1,0 +1,37 @@
+﻿@model IEnumerable<EcommerceMVC.ViewModels.DanhGiaVM>
+
+@foreach (var item in Model)
+{
+    <div class="d-flex">
+        @if (item.Hinh != null)
+        {
+            <img src="~/Hinh/KhachHang/@item.Hinh" class="img-fluid rounded-circle p-3" style="width: 100px; height: 100px;" alt="@item.TenKh">
+        }
+        else
+        {
+            <img src="~/Hinh/KhachHang/user.png" class="img-fluid rounded-circle p-3" style="width: 100px; height: 100px;" alt="">
+        }
+        <div class="">
+            <p class="mb-2" style="font-size: 14px;">@item.NgayDang</p>
+            <div class="d-flex justify-content-between">
+                <h5>@item.TenKh</h5>
+                <div class="d-flex mb-3">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if(i <= item.DiemDanhGia)
+                        {
+                            <i class="fa fa-star text-secondary"></i>
+                        }
+                        else
+                        {
+                            <i class="fa fa-star"></i>
+                        }
+                    }
+                </div>
+            </div>
+            <p>
+                @item.MoTa
+            </p>
+        </div>
+    </div>
+}
