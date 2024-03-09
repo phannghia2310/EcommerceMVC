@@ -1,4 +1,6 @@
-﻿using EcommerceMVC.Services;
+﻿using EcommerceMVC.Data;
+using EcommerceMVC.Services;
+using EcommerceMVC.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Mail;
@@ -8,16 +10,39 @@ namespace EcommerceMVC.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly Ecommerce2024Context _context;
         private readonly IEmailSender _emailSender;
 
-        public HomeController(IEmailSender emailSender)
+        public HomeController(Ecommerce2024Context context, IEmailSender emailSender)
         {
+            _context = context;
             _emailSender = emailSender;
         }
 
         public IActionResult Index()
-        { 
-            return View();
+        {
+            var loais = _context.Loais.Select(l => new MenuLoaiVM
+            {
+                MaLoai = l.MaLoai,
+                TenLoai = l.TenLoai,
+            }).ToList();
+
+            var hangHoas = _context.HangHoas.Select(p => new HangHoaVM
+            {
+                MaHangHoa = p.MaHh,
+                TenHangHoa = p.TenHh,
+                Hinh = p.Hinh,
+                DonGia = p.DonGia ?? 0,
+                MoTaNgan = p.MoTaDonVi ?? "",
+                TenLoai = p.MaLoaiNavigation.TenLoai,
+                MaLoai = p.MaLoaiNavigation.MaLoai
+            }).ToList();
+
+            HomeVM home = new HomeVM();
+            home.listLoai = loais;
+            home.listHangHoa = hangHoas;
+
+            return View(home);
         }
 
         public IActionResult CheckLoginStatus()

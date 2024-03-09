@@ -1,6 +1,7 @@
-﻿
+﻿@model EcommerceMVC.Areas.Admin.Models.ThongKe
+
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Thống kê";
     Layout = "_LayoutAdmin";
 }
 
@@ -9,12 +10,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Dashboard</h1>
+                <h1 class="m-0 text-dark">Thống kê</h1>
             </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="/Admin/Home/Index">Trang chủ</a></li>
-                    <li class="breadcrumb-item active">Dashboard</li>
+                    <li class="breadcrumb-item active">Thống kê</li>
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -30,9 +31,9 @@
                 <!-- small box -->
                 <div class="small-box bg-info">
                     <div class="inner">
-                        <h3>150</h3>
+                        <h3>@Model.tongDonHang</h3>
 
-                        <p>New Orders</p>
+                        <p>Đơn hàng</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-bag"></i>
@@ -44,23 +45,9 @@
                 <!-- small box -->
                 <div class="small-box bg-success">
                     <div class="inner">
-                        <h3>53<sup style="font-size: 20px">%</sup></h3>
+                        <h3>@Model.tongKhachHang</h3>
 
-                        <p>Bounce Rate</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-stats-bars"></i>
-                    </div>
-                </div>
-            </div>
-            <!-- ./col -->
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3>44</h3>
-
-                        <p>User Registrations</p>
+                        <p>Khách hàng</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-person-add"></i>
@@ -70,11 +57,25 @@
             <!-- ./col -->
             <div class="col-lg-3 col-6">
                 <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>@Model.tongDoanhThu$</h3>
+
+                        <p>Doanh thu</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-stats-bars"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
                 <div class="small-box bg-danger">
                     <div class="inner">
-                        <h3>65</h3>
+                        <h3>@Model.tongHangHoa</h3>
 
-                        <p>Unique Visitors</p>
+                        <p>Hàng hóa</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-pie-graph"></i>
@@ -89,6 +90,38 @@
             <!-- Left col -->
             <section class="col-lg-7 connectedSortable">
                 <!-- Custom tabs (Charts with tabs)-->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fa fa-chart-pie mr-1"></i>
+                            Doanh thu
+                        </h3>
+                        <div class="card-tools">
+                            <ul class="nav nav-pills ml-auto">
+                                <li class="nav-item">
+                                    <a id="chartProduct" href="#product-chart" class="nav-link active" data-toggle="tab">Theo mặt hàng</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a id="chartYear" href="#year-chart" class="nav-link" data-toggle="tab">Theo năm</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div><!-- /.card-header -->
+
+                    <div class="card-body d-none">
+                        <div class="tab-content p-0">
+                            <!-- Morris chart - Sales -->
+                            <div class="chart tab-pane" id="product-chart"
+                                 style="position: relative; width: 100%; height: 500px; display: flex; justify-content: center;">
+                                <canvas id="chartDSMH" style="width: 625px; height: 500px;"></canvas>
+                            </div>
+                            <div class="chart tab-pane" id="year-chart"
+                                 style="position: relative; width: 100%; height: 500px; display: flex; justify-content: center;">
+                                <canvas id="chartDSN" style="width: 625px; height: 500px;"></canvas>
+                            </div>
+                        </div>
+                    </div><!-- /.card-body -->
+                </div>
                 <!-- /.card -->
                 <!-- DIRECT CHAT -->
                 <!--/.direct-chat -->
@@ -97,6 +130,58 @@
             <!-- right col (We are only adding the ID to make the widgets sortable)-->
             <section class="col-lg-5 connectedSortable">
                 <!-- Calendar -->
+                <div class="card bg-gradient-success">
+                    <div class="card-header border-0">
+
+                        <h3 class="card-title">
+                            <i class="far fa-calendar-alt"></i>
+                            Lịch
+                        </h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body pt-0" style="display: block;">
+                        <!--The calendar -->
+                        <div id="calendar" style="width: 100%">
+                            <div class="bootstrap-datetimepicker-widget usetwentyfour">
+                                <ul class="list-unstyled">
+                                    <li class="show">
+                                        <div class="datepicker">
+                                            <dib class="datepicker-days">
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="prev" data-action="previous">
+                                                                <span class="fa fa-chevron-left" title="Previous Month"></span>
+                                                            </th>
+                                                            <th id="monthYear" class="picker-switch" data-action="pickerSwitch" colspan="5" title="Select Monnth"></th>
+                                                            <th class="next" data-action="next">
+                                                                <span class="fa fa-chevron-right" title="Next Month"></span>
+                                                            </th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="dow">Su</th>
+                                                            <th class="dow">Mo</th>
+                                                            <th class="dow">Tu</th>
+                                                            <th class="dow">We</th>
+                                                            <th class="dow">Th</th>
+                                                            <th class="dow">Fr</th>
+                                                            <th class="dow">Sa</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="calendarBody">
+                                                        <tr>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </dib>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
                 <!-- /.card -->
             </section>
             <!-- right col -->
@@ -105,3 +190,186 @@
     </div><!-- /.container-fluid -->
 </section>
 <!-- /.content -->
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        var currentChart;
+
+        $(document).ready(function () {
+            $('#chartProduct').on('click', function () {
+                $("#product-chart").addClass('d-block').removeClass('d-none');
+                $("#year-chart").addClass('d-none').removeClass('d-block');
+
+                // Hiển thị card-body
+                $(".card-body").addClass('d-block').removeClass('d-none');
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/Home/DoanhThuTungMatHang",
+                    data: "",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(data) {
+                        if (currentChart) { 
+                            currentChart.destroy();
+                        }
+                        console.log(currentChart);
+
+                        var _data = data;
+                        var _chartLabels = _data[0];
+                        var _chartData = _data[1];
+
+                        var letters = '0123456789ABCDEF';
+                        var colors = [];
+                        for(var j = 0; j < _chartLabels.length; j++) {
+                            var color = '#';
+                            for (var i = 0; i < 6; i++) {
+                                color += letters[Math.floor(Math.random() * letters.length)];
+                                if(color == colors[j]) {
+                                    var color = '#';
+                                    color += letters[Math.floor(Math.random() * letters.length)];
+                                }
+                            }
+                            colors.push(color);
+                        }
+
+                        currentChart = new Chart("chartDSMH", {
+                            type: "pie",
+                            data: {
+                                labels: _chartLabels,
+                                datasets: [{
+                                    backgroundColor: colors,
+                                    data: _chartData
+                                }]
+                            }
+                        });
+
+                        console.log(currentChart);
+                    },
+                    error: {
+
+                    }
+                });
+            });
+
+            $('#chartYear').on('click', function () {
+                $("#year-chart").addClass('d-block').removeClass('d-none');
+                $("#product-chart").addClass('d-none').removeClass('d-block');
+
+                // Hiển thị card-body
+                $(".card-body").addClass('d-block').removeClass('d-none');
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/Home/DoanhThuTheoNam",
+                    data: "",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        if (currentChart) {
+                            currentChart.destroy();
+                        }
+                        console.log(currentChart);
+
+                        var _data = data;
+                        var _chartLabels = _data[0];
+                        var _chartData = _data[1];
+
+                        var letters = '0123456789ABCDEF';
+                        var colors = [];
+                        for (var j = 0; j < _chartLabels.length; j++) {
+                            var color = '#';
+                            for (var i = 0; i < 6; i++) {
+                                color += letters[Math.floor(Math.random() * letters.length)];
+                                if (color == colors[j]) {
+                                    var color = '#';
+                                    color += letters[Math.floor(Math.random() * letters.length)];
+                                }
+                            }
+                            colors.push(color);
+                        }
+
+                        currentChart = new Chart("chartDSN", {
+                            type: "line",
+                            data: {
+                                labels: _chartLabels,
+                                datasets: [{
+                                    backgroundColor: colors,
+                                    data: _chartData
+                                }]
+                            }
+                        });
+                        console.log(currentChart);
+                    },
+                    error: {
+
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        var date = new Date();
+        var month = date.getMonth();
+        var year = date.getFullYear();
+        var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+        function createCalendar() {
+            var toDay = new Date().getDate();
+            var firstDay = new Date(year, month, 1).getDay();
+            var lastDay = new Date(year, month + 1, 0).getDate();
+            var lastDayOfPrevMonth = new Date(year, month, 0).getDate();
+
+            var html = '';
+            var day = 1;
+            var prevMonthDay = lastDayOfPrevMonth - firstDay + 1;
+            var nextMonthDay = 1;
+            for (var i = 0; i < 6; i++) {
+                html += '<tr>';
+                for (var j = 0; j < 7; j++) {
+                    if (i === 0 && j < firstDay) {
+                        html += '<td data-action="selectDay" class="day old">' + prevMonthDay++ + '</td>';
+                    }
+                    else if (day > lastDay) {
+                        html += '<td data-action="selectDay" class="day new">' + nextMonthDay++ + '</td>';
+                    }
+                    else if (day === toDay) {
+                        html += '<td data-action="selectDay" class="day active today weekend">' + day++ + '</td>';
+                    }
+                    else {
+                        html += '<td data-action="selectDay" class="day weekend">' + day++ + '</td>';
+                    }
+                }
+                html += '</tr>';
+            }
+
+            $('#calendarBody').html(html);
+            $('#monthYear').text(months[month] + ' ' + year);
+        }
+
+        $('.next').click(function () {
+            if (month === 11) {
+                month = 0;
+                year++;
+            } else {
+                month++;
+            }
+            createCalendar();
+        });
+
+        $('.prev').click(function () {
+            if (month === 0) {
+                month = 11;
+                year--;
+            } else {
+                month--;
+            }
+            createCalendar();
+        });
+
+        createCalendar();
+    </script>
+}
