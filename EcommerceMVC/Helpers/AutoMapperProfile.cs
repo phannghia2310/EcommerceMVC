@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EcommerceMVC.Areas.Admin.Models;
 using EcommerceMVC.Data;
 using EcommerceMVC.ViewModels;
 
@@ -15,6 +16,15 @@ namespace EcommerceMVC.Helpers
             CreateMap<HoaDonVM, HoaDon>();
             CreateMap<ChiTietHdVM, ChiTietHd>().ReverseMap();
             CreateMap<DanhGiaVM, YeuThich>().ReverseMap();
+            CreateMap<HoiDapVM, HoiDap>().ReverseMap();
+
+            //Admin
+            CreateMap<NhaCungCapModel, NhaCungCap>().ReverseMap();   
+            CreateMap<KhachHangModel, KhachHang>().ReverseMap(); 
+            CreateMap<PhongBanModel, PhongBan>().ReverseMap();
+            CreateMap<NhanVienModel, NhanVien>().ReverseMap();
+            CreateMap<LoaiModel, Loai>().ReverseMap();
+            CreateMap<HangHoaModel, HangHoa>().ReverseMap();
         }
     }
 }

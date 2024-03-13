@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceMVC.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class HomeController : Controller
     {
         private readonly Ecommerce2024Context _context;
@@ -15,7 +16,7 @@ namespace EcommerceMVC.Areas.Admin.Controllers
             _context = context;
         }
 
-        [Area("Admin")]
+        //[Area("Admin")]
         public IActionResult Index()
         {
             var Month = DateTime.Now.Month;
@@ -49,7 +50,7 @@ namespace EcommerceMVC.Areas.Admin.Controllers
             return View(data);
         }
 
-        [Area("Admin")]
+        //[Area("Admin")]
         [HttpPost]
         public List<object> DoanhThuTungMatHang()
         {
@@ -64,7 +65,7 @@ namespace EcommerceMVC.Areas.Admin.Controllers
             return data;
         }
 
-        [Area("Admin")]
+        //[Area("Admin")]
         [HttpPost]
         public List<object> DoanhThuTheoNam()
         {

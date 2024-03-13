@@ -1,0 +1,72 @@
+﻿@model EcommerceMVC.Areas.Admin.Models.NhanVienModel
+
+@{
+    ViewData["Title"] = "Chỉnh sửa";
+    Layout = "_LayoutAdmin";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Chỉnh sửa</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="~/Admin/Home/Index">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="~/Admin/Employee/Index">QL Nhân viên</a></li>
+                    <li class="breadcrumb-item active">Chỉnh sửa</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card card-primary">
+                <div class="card-body">
+                    <form asp-action="Edit" asp-controller="Employee" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="@Model.MaNv" class="form-control" />
+                        <div class="form-group">
+                            <label asp-for="@Model.HoTen"></label>
+                            <input type="text" asp-for="@Model.HoTen" class="form-control" />
+                            <span asp-validation-for="@Model.HoTen" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.Email"></label>
+                            <input type="text" asp-for="@Model.Email" class="form-control" />
+                            <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.MatKhau"></label>
+                            <input type="text" asp-for="@Model.MatKhau" class="form-control" />
+                            <span asp-validation-for="@Model.MatKhau" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.MaPb"></label>
+                            <select asp-for="@Model.MaPb" class="form-control custom-select">
+                                <option selected disabled>Chọn loại hàng hóa</option>
+                                @foreach (var item in Model.listPB)
+                                {
+                                    <option value="@item.MaPb">@item.TenPb</option>
+
+                                }
+                            </select>
+                            <span asp-validation-for="@Model.MaPb" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <a asp-controller="Employee" asp-action="Index" class="btn btn-secondary">Hủy bỏ</a>
+                            <input type="submit" value="Lưu thay đổi" class="btn btn-success float-right">
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+</section>

@@ -1,0 +1,55 @@
+﻿@model EcommerceMVC.Areas.Admin.Models.PhongBanModel
+
+@{
+    ViewData["Title"] = "Chỉnh sửa";
+    Layout = "_LayoutAdmin";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Chỉnh sửa</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="~/Admin/Home/Index">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="~/Admin/Department/Index">QL Phòng ban</a></li>
+                    <li class="breadcrumb-item active">Chỉnh sửa</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card card-primary">
+                <div class="card-body">
+                    <form asp-action="Edit" asp-controller="Department" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="@Model.MaPb" class="form-control" />
+                        <div class="form-group">
+                            <label asp-for="@Model.TenPb"></label>
+                            <input type="text" asp-for="@Model.TenPb" class="form-control" />
+                            <span asp-validation-for="@Model.TenPb" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.ThongTin"></label>
+                            <input type="text" asp-for="@Model.ThongTin" class="form-control" />
+                            <span asp-validation-for="@Model.ThongTin" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <a asp-controller="Department" asp-action="Index" class="btn btn-secondary">Hủy bỏ</a>
+                            <input type="submit" value="Lưu thay đổi" class="btn btn-success float-right">
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+</section>

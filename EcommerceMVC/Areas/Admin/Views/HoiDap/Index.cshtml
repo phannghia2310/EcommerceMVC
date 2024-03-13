@@ -1,0 +1,107 @@
+﻿@model IEnumerable<EcommerceMVC.Areas.Admin.Models.HoiDapModel>
+
+@{
+    ViewData["Title"] = "Quản lý hỏi đáp";
+    Layout = "_LayoutAdmin";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>QL hỏi đáp</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="~/Admin/Home/Index">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">QL hỏi đáp</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header row justify-content-around">
+                    <h3 class="card-title">Bảng dữ liệu hỏi đáp</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="dataTables_wrapper dt-bootstrap4">
+                        <div class="row">
+                            <table id="customer-table" class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Mã hỏi đáp</th>
+                                        <th>Họ tên</th>
+                                        <th>Email</th>
+                                        <th>Câu hỏi</th>
+                                        <th>Trả lời</th>
+                                        <th>Ngày gửi</th>
+                                        <th>Nhân viên</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.MaHd</td>
+                                            <td>@item.HoTen</td>
+                                            <td>@item.Email</td>
+                                            <td>@item.CauHoi</td>
+                                            <td>@item.TraLoi</td>
+                                            @if (string.IsNullOrEmpty(item.MaNvNavigation?.HoTen))
+                                            {
+                                                <td></td>
+                                            }
+                                            else
+                                            { 
+                                                <td>@item.MaNvNavigation.HoTen</td>
+                                            }
+                                            <td class="d-flex justify-content-center">
+                                                <a class="btn btn-info btn-sm mb-2 mr-2" asp-controller="HoiDap" asp-action="Answer" asp-route-id="@item.MaHd">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                    Trả lời
+                                                </a>
+                                                <a class="btn btn-danger btn-sm mb-2 text-white delete-button" data-url="@Url.Action("Delete", "HoiDap", new { id = @item.MaHd })">
+                                                    <i class="fas fa-trash"></i>
+                                                    Xóa
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+@section Scripts {
+    <script>
+        $('.delete-button').on('click', function (e) {
+            e.preventDefault();
+            var url = $(this).data('url');
+            if (confirm("Bạn có chắc chắn muốn xóa nhà cung cấp này không?")) {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    success: function (result) {
+                        // Xử lý sau khi xóa thành công, ví dụ: tải lại trang
+                        location.reload();
+                    }
+                });
+            }
+        });
+    </script>
+}

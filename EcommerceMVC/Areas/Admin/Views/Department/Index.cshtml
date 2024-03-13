@@ -1,0 +1,98 @@
+﻿@model IEnumerable<EcommerceMVC.Areas.Admin.Models.PhongBanModel>
+
+@{
+    ViewData["Title"] = "Quản lý phòng ban";
+    Layout = "_LayoutAdmin";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>QL phòng ban</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="~/Admin/Home/Index">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">QL phòng ban</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header row justify-content-around">
+                    <h3 class="card-title">Bảng dữ liệu phong ban</h3>
+                    <a asp-action="Create" asp-controller="Department" class="btn btn-success text-white">Thêm phòng ban</a>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="dataTables_wrapper dt-bootstrap4">
+                        <div class="row">
+                            <div style="overflow-x:auto">
+                                <table id="customer-table" class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã phòng ban</th>
+                                            <th>Tên phòng ban</th>
+                                            <th>Thông tin</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>@item.MaPb</td>
+                                                <td>@item.TenPb</td>
+                                                <td>@item.ThongTin</td>
+                                                <td class="d-flex justify-content-center m-2">
+                                                    <a class="btn btn-info btn-sm mr-2 mb-2" asp-controller="Department" asp-action="Edit" asp-route-id="@item.MaPb">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                        Sửa
+                                                    </a>
+                                                    <a class="btn btn-danger btn-sm mb-2 text-white delete-button" data-url="@Url.Action("Delete", "Department", new { id = @item.MaPb })">
+                                                        <i class="fas fa-trash"></i>
+                                                        Xóa
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+@section Scripts {
+    <script>
+        $('.delete-button').on('click', function (e) {
+            e.preventDefault();
+            var url = $(this).data('url');
+            if (confirm("Bạn có chắc chắn muốn xóa phòng ban này không?")) {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    success: function (result) {
+                        // Xử lý sau khi xóa thành công, ví dụ: tải lại trang
+                        location.reload();
+                    }
+                });
+            }
+        });
+    </script>
+}
+

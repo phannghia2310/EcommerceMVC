@@ -15,13 +15,7 @@ public partial class Ecommerce2024Context : DbContext
     {
     }
 
-    public virtual DbSet<BanBe> BanBes { get; set; }
-
     public virtual DbSet<ChiTietHd> ChiTietHds { get; set; }
-
-    public virtual DbSet<ChuDe> ChuDes { get; set; }
-
-    public virtual DbSet<GopY> Gopies { get; set; }
 
     public virtual DbSet<HangHoa> HangHoas { get; set; }
 
@@ -37,52 +31,20 @@ public partial class Ecommerce2024Context : DbContext
 
     public virtual DbSet<NhanVien> NhanViens { get; set; }
 
-    public virtual DbSet<PhanCong> PhanCongs { get; set; }
-
-    public virtual DbSet<PhanQuyen> PhanQuyens { get; set; }
-
     public virtual DbSet<PhongBan> PhongBans { get; set; }
 
     public virtual DbSet<TrangThai> TrangThais { get; set; }
-
-    public virtual DbSet<TrangWeb> TrangWebs { get; set; }
 
     public virtual DbSet<VChiTietHoaDon> VChiTietHoaDons { get; set; }
 
     public virtual DbSet<YeuThich> YeuThiches { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Data Source=PHANNGHIA0411\\PHANNGHIA;Initial Catalog=Ecommerce2024;Integrated Security=True;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<BanBe>(entity =>
-        {
-            entity.HasKey(e => e.MaBb).HasName("PK_Promotions");
-
-            entity.ToTable("BanBe");
-
-            entity.Property(e => e.MaBb).HasColumnName("MaBB");
-            entity.Property(e => e.Email).HasMaxLength(50);
-            entity.Property(e => e.HoTen).HasMaxLength(50);
-            entity.Property(e => e.MaHh).HasColumnName("MaHH");
-            entity.Property(e => e.MaKh)
-                .HasMaxLength(50)
-                .HasColumnName("MaKH");
-            entity.Property(e => e.NgayGui)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-
-            entity.HasOne(d => d.MaHhNavigation).WithMany(p => p.BanBes)
-                .HasForeignKey(d => d.MaHh)
-                .HasConstraintName("FK_QuangBa_HangHoa");
-
-            entity.HasOne(d => d.MaKhNavigation).WithMany(p => p.BanBes)
-                .HasForeignKey(d => d.MaKh)
-                .HasConstraintName("FK_BanBe_KhachHang");
-        });
-
         modelBuilder.Entity<ChiTietHd>(entity =>
         {
             entity.HasKey(e => e.MaCt).HasName("PK_OrderDetails");
@@ -102,50 +64,6 @@ public partial class Ecommerce2024Context : DbContext
                 .HasForeignKey(d => d.MaHh)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_OrderDetails_Products");
-        });
-
-        modelBuilder.Entity<ChuDe>(entity =>
-        {
-            entity.HasKey(e => e.MaCd);
-
-            entity.ToTable("ChuDe");
-
-            entity.Property(e => e.MaCd).HasColumnName("MaCD");
-            entity.Property(e => e.MaNv)
-                .HasMaxLength(50)
-                .HasColumnName("MaNV");
-            entity.Property(e => e.TenCd)
-                .HasMaxLength(50)
-                .HasColumnName("TenCD");
-
-            entity.HasOne(d => d.MaNvNavigation).WithMany(p => p.ChuDes)
-                .HasForeignKey(d => d.MaNv)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_ChuDe_NhanVien");
-        });
-
-        modelBuilder.Entity<GopY>(entity =>
-        {
-            entity.HasKey(e => e.MaGy);
-
-            entity.ToTable("GopY");
-
-            entity.Property(e => e.MaGy)
-                .HasMaxLength(50)
-                .HasColumnName("MaGY");
-            entity.Property(e => e.DienThoai).HasMaxLength(50);
-            entity.Property(e => e.Email).HasMaxLength(50);
-            entity.Property(e => e.HoTen).HasMaxLength(50);
-            entity.Property(e => e.MaCd).HasColumnName("MaCD");
-            entity.Property(e => e.NgayGy)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnName("NgayGY");
-            entity.Property(e => e.NgayTl).HasColumnName("NgayTL");
-            entity.Property(e => e.TraLoi).HasMaxLength(50);
-
-            entity.HasOne(d => d.MaCdNavigation).WithMany(p => p.Gopies)
-                .HasForeignKey(d => d.MaCd)
-                .HasConstraintName("FK_GopY_ChuDe");
         });
 
         modelBuilder.Entity<HangHoa>(entity =>
@@ -237,6 +155,8 @@ public partial class Ecommerce2024Context : DbContext
                 .ValueGeneratedNever()
                 .HasColumnName("MaHD");
             entity.Property(e => e.CauHoi).HasMaxLength(50);
+            entity.Property(e => e.Email).HasMaxLength(50);
+            entity.Property(e => e.HoTen).HasMaxLength(50);
             entity.Property(e => e.MaNv)
                 .HasMaxLength(50)
                 .HasColumnName("MaNV");
@@ -245,6 +165,7 @@ public partial class Ecommerce2024Context : DbContext
 
             entity.HasOne(d => d.MaNvNavigation).WithMany(p => p.HoiDaps)
                 .HasForeignKey(d => d.MaNv)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_HoiDap_NhanVien");
         });
 
@@ -312,57 +233,16 @@ public partial class Ecommerce2024Context : DbContext
                 .HasColumnName("MaNV");
             entity.Property(e => e.Email).HasMaxLength(50);
             entity.Property(e => e.HoTen).HasMaxLength(50);
+            entity.Property(e => e.MaPb)
+                .HasMaxLength(7)
+                .IsUnicode(false)
+                .HasColumnName("MaPB");
             entity.Property(e => e.MatKhau).HasMaxLength(50);
-        });
 
-        modelBuilder.Entity<PhanCong>(entity =>
-        {
-            entity.HasKey(e => e.MaPc);
-
-            entity.ToTable("PhanCong");
-
-            entity.Property(e => e.MaPc).HasColumnName("MaPC");
-            entity.Property(e => e.MaNv)
-                .HasMaxLength(50)
-                .HasColumnName("MaNV");
-            entity.Property(e => e.MaPb)
-                .HasMaxLength(7)
-                .IsUnicode(false)
-                .HasColumnName("MaPB");
-            entity.Property(e => e.NgayPc)
-                .HasColumnType("datetime")
-                .HasColumnName("NgayPC");
-
-            entity.HasOne(d => d.MaNvNavigation).WithMany(p => p.PhanCongs)
-                .HasForeignKey(d => d.MaNv)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PhanCong_NhanVien");
-
-            entity.HasOne(d => d.MaPbNavigation).WithMany(p => p.PhanCongs)
+            entity.HasOne(d => d.MaPbNavigation).WithMany(p => p.NhanViens)
                 .HasForeignKey(d => d.MaPb)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PhanCong_PhongBan");
-        });
-
-        modelBuilder.Entity<PhanQuyen>(entity =>
-        {
-            entity.HasKey(e => e.MaPq);
-
-            entity.ToTable("PhanQuyen");
-
-            entity.Property(e => e.MaPq).HasColumnName("MaPQ");
-            entity.Property(e => e.MaPb)
-                .HasMaxLength(7)
-                .IsUnicode(false)
-                .HasColumnName("MaPB");
-
-            entity.HasOne(d => d.MaPbNavigation).WithMany(p => p.PhanQuyens)
-                .HasForeignKey(d => d.MaPb)
-                .HasConstraintName("FK_PhanQuyen_PhongBan");
-
-            entity.HasOne(d => d.MaTrangNavigation).WithMany(p => p.PhanQuyens)
-                .HasForeignKey(d => d.MaTrang)
-                .HasConstraintName("FK_PhanQuyen_TrangWeb");
+                .HasConstraintName("FK_PhongBan_NhanVien");
         });
 
         modelBuilder.Entity<PhongBan>(entity =>
@@ -389,18 +269,6 @@ public partial class Ecommerce2024Context : DbContext
             entity.Property(e => e.MaTrangThai).ValueGeneratedNever();
             entity.Property(e => e.MoTa).HasMaxLength(500);
             entity.Property(e => e.TenTrangThai).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<TrangWeb>(entity =>
-        {
-            entity.HasKey(e => e.MaTrang);
-
-            entity.ToTable("TrangWeb");
-
-            entity.Property(e => e.TenTrang).HasMaxLength(50);
-            entity.Property(e => e.Url)
-                .HasMaxLength(250)
-                .HasColumnName("URL");
         });
 
         modelBuilder.Entity<VChiTietHoaDon>(entity =>

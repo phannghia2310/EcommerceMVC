@@ -13,11 +13,11 @@ public partial class NhanVien
 
     public string? MatKhau { get; set; }
 
-    public virtual ICollection<ChuDe> ChuDes { get; set; } = new List<ChuDe>();
+    public string MaPb { get; set; } = null!;
 
     public virtual ICollection<HoaDon> HoaDons { get; set; } = new List<HoaDon>();
 
     public virtual ICollection<HoiDap> HoiDaps { get; set; } = new List<HoiDap>();
 
-    public virtual ICollection<PhanCong> PhanCongs { get; set; } = new List<PhanCong>();
+    public virtual PhongBan MaPbNavigation { get; set; } = null!;
 }

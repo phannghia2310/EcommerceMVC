@@ -1,0 +1,80 @@
+﻿@model EcommerceMVC.Areas.Admin.Models.LoaiModel
+
+@{
+    ViewData["Title"] = "Thêm mới";
+    Layout = "_LayoutAdmin";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Thêm mới</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="~/Admin/Home/Index">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="~/Admin/Category/Index">QL Loại sản phẩm</a></li>
+                    <li class="breadcrumb-item active">Thêm mới</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card card-primary">
+                <div class="card-body">
+                    <form asp-action="Create" asp-controller="Category" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label asp-for="@Model.TenLoai"></label>
+                            <input type="text" asp-for="@Model.TenLoai" class="form-control" />
+                            <span asp-validation-for="@Model.TenLoai" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.TenLoaiAlias"></label>
+                            <input type="text" asp-for="@Model.TenLoaiAlias" class="form-control" />
+                            <span asp-validation-for="@Model.TenLoaiAlias" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.MoTa"></label>
+                            <input type="text" asp-for="@Model.MoTa" class="form-control" />
+                            <span asp-validation-for="@Model.MoTa" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label my-3" asp-for="@Model.Hinh"></label>
+                            <input type="file" name="Hinh" class="form-control" asp-for="@Model.Hinh" onchange="loadImage(event)">
+                        </div> 
+                        <div class="form-group">
+                            <a asp-controller="Category" asp-action="Index" class="btn btn-secondary">Hủy bỏ</a>
+                            <input type="submit" value="Tạo loại sản phẩm" class="btn btn-success float-right">
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-6">
+            <img id="preview" class="w-100" src="#" alt="Ten loai san pham" style="display: none" />
+        </div>
+    </div>
+</section>
+<!-- /.content -->
+@section Scripts {
+    <script>
+        function loadImage(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('preview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+}

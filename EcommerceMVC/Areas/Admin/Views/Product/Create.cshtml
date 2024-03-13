@@ -1,0 +1,124 @@
+﻿@model EcommerceMVC.Areas.Admin.Models.HangHoaModel
+
+@{
+    ViewData["Title"] = "Thêm mới";
+    Layout = "_LayoutAdmin";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Thêm mới</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="~/Admin/Home/Index">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="~/Admin/Product/Index">QL Hàng hóa</a></li>
+                    <li class="breadcrumb-item active">Thêm mới</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card card-primary">
+                <div class="card-body">
+                    <form asp-action="Create" asp-controller="Product" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label asp-for="@Model.TenHh"></label>
+                            <input type="text" asp-for="@Model.TenHh" class="form-control" />
+                            <span asp-validation-for="@Model.TenHh" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.MaLoai"></label>
+                            <select asp-for="@Model.MaLoai" class="form-control custom-select">
+                                <option selected disabled>Chọn loại hàng hóa</option>
+                                @foreach(var item in Model.listLoai)
+                                {
+                                    <option value="@item.MaLoai">@item.TenLoai</option>
+
+                                }
+                            </select>
+                            <span asp-validation-for="@Model.MaLoai" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.MoTaDonVi"></label>
+                            <input type="text" asp-for="@Model.MoTaDonVi" class="form-control" />
+                            <span asp-validation-for="@Model.MoTaDonVi" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.DonGia"></label>
+                            <input type="text" asp-for="@Model.DonGia" class="form-control" />
+                            <span asp-validation-for="@Model.DonGia" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label my-3" asp-for="@Model.Hinh"></label>
+                            <input type="file" name="Hinh" class="form-control" asp-for="@Model.Hinh" onchange="loadImage(event)">
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.NgaySx"></label>
+                            <input type="date" asp-for="@Model.NgaySx" class="form-control" />
+                            <span asp-validation-for="@Model.NgaySx" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.GiamGia"></label>
+                            <input type="text" asp-for="@Model.GiamGia" class="form-control" />
+                            <span asp-validation-for="@Model.GiamGia" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.SoLanXem"></label>
+                            <input type="text" asp-for="@Model.SoLanXem" class="form-control" />
+                            <span asp-validation-for="@Model.SoLanXem" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.MoTa"></label>
+                            <input type="text" asp-for="@Model.MoTa" class="form-control" />
+                            <span asp-validation-for="@Model.MoTa" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.MaNcc"></label>
+                            <select asp-for="@Model.MaNcc" class="form-control custom-select">
+                                <option selected disabled>Chọn nhà cung cấp</option>
+                                @foreach (var item in Model.listNcc)
+                                {
+                                    <option value="@item.MaNcc">@item.TenCongTy</option>
+
+                                }
+                            </select>
+                            <span asp-validation-for="@Model.MaNcc" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <a asp-controller="Product" asp-action="Index" class="btn btn-secondary">Hủy bỏ</a>
+                            <input type="submit" value="Tạo hàng hóa" class="btn btn-success float-right">
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-6">
+            <img id="preview" class="w-100" src="#" alt="Hình hàng hóa" style="display: none" />
+        </div>
+    </div>
+</section>
+<!-- /.content -->
+@section Scripts {
+    <script>
+        function loadImage(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('preview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+}

@@ -12,6 +12,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<Ecommerce2024Context>(options => { 
     options.UseSqlServer(builder.Configuration.GetConnectionString("EcommerceMVC"));
 });
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -50,6 +51,8 @@ builder.Services.AddSingleton(x => new PaypalClient(
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
+builder.Services.AddScoped<Ecommerce2024Context>();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -74,19 +77,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
+    name: "MyArea",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}");
-
-    endpoints.MapAreaControllerRoute(
-        name: "Admin",
-        areaName: "Admin",
-        pattern: "Admin/{controller=Home}/{action=Index}/{id?}");
-});
 
 app.Run();

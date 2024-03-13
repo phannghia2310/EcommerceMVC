@@ -29,8 +29,6 @@ public partial class HangHoa
 
     public string MaNcc { get; set; } = null!;
 
-    public virtual ICollection<BanBe> BanBes { get; set; } = new List<BanBe>();
-
     public virtual ICollection<ChiTietHd> ChiTietHds { get; set; } = new List<ChiTietHd>();
 
     public virtual Loai MaLoaiNavigation { get; set; } = null!;
