@@ -54,6 +54,7 @@
                                             <td>@item.Email</td>
                                             <td>@item.CauHoi</td>
                                             <td>@item.TraLoi</td>
+                                            <td>@item.NgayDua</td>
                                             @if (string.IsNullOrEmpty(item.MaNvNavigation?.HoTen))
                                             {
                                                 <td></td>
@@ -63,10 +64,13 @@
                                                 <td>@item.MaNvNavigation.HoTen</td>
                                             }
                                             <td class="d-flex justify-content-center">
-                                                <a class="btn btn-info btn-sm mb-2 mr-2" asp-controller="HoiDap" asp-action="Answer" asp-route-id="@item.MaHd">
-                                                    <i class="fas fa-pencil-alt"></i>
-                                                    Trả lời
-                                                </a>
+                                                @if(string.IsNullOrEmpty(item.TraLoi))
+                                                {
+                                                    <a class="btn btn-info btn-sm mb-2 mr-2" asp-controller="HoiDap" asp-action="Answer" asp-route-id="@item.MaHd">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                        Trả lời
+                                                    </a>
+                                                }
                                                 <a class="btn btn-danger btn-sm mb-2 text-white delete-button" data-url="@Url.Action("Delete", "HoiDap", new { id = @item.MaHd })">
                                                     <i class="fas fa-trash"></i>
                                                     Xóa

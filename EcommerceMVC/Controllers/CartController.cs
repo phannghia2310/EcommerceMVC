@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using EcommerceMVC.Services;
 using System.Text;
 using Org.BouncyCastle.Crypto.Engines;
+using EcommerceMVC.Areas.Admin.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceMVC.Controllers
 {
@@ -100,7 +102,7 @@ namespace EcommerceMVC.Controllers
             return RedirectToAction("Index");
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         [HttpGet]
         public IActionResult ThanhToan()
         {
@@ -114,7 +116,7 @@ namespace EcommerceMVC.Controllers
             return  View(Cart);
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         [HttpPost]
         public IActionResult ThanhToan(ThanhToanVM model, string payment = "COD")
         {
@@ -216,14 +218,14 @@ namespace EcommerceMVC.Controllers
             return View(Cart);
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         public IActionResult PaymentSuccess()
         {
             return View("Success");
         }
 
         #region Paypal payment
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         [HttpPost("/Cart/SaveForm")]
         public IActionResult SaveForm([FromForm] ThanhToanVM model)
         {
@@ -238,7 +240,7 @@ namespace EcommerceMVC.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         [HttpPost("/Cart/CreatePaypalOrder")]
         public async Task<IActionResult> CreatePaypalOrder(CancellationToken cancellationToken)
         {
@@ -258,7 +260,7 @@ namespace EcommerceMVC.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         [HttpPost("/Cart/CapturePaypalOrder")]
         public async Task<IActionResult> CapturePaypalOrder(string orderID, CancellationToken cancellationToken)
         {
@@ -291,7 +293,7 @@ namespace EcommerceMVC.Controllers
                     NgayGiao = DateTime.Now.AddDays(6),
                     CachThanhToan = "PAYPAL",
                     CachVanChuyen = "GRAB",
-                    MaTrangThai = 0,
+                    MaTrangThai = 1,
                     GhiChu = model.GhiChu
                 };
 
@@ -356,13 +358,13 @@ namespace EcommerceMVC.Controllers
         }
         #endregion
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         public IActionResult PaymentFail()
         {
             return View();
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         public IActionResult PaymentCallBack()
         {
             var response = _vnPayService.PaymentExecute(Request.Query);
@@ -398,7 +400,7 @@ namespace EcommerceMVC.Controllers
                 NgayGiao = DateTime.Now.AddDays(6),
                 CachThanhToan = "VNPAY",
                 CachVanChuyen = "GRAB",
-                MaTrangThai = 0,
+                MaTrangThai = 1,
                 GhiChu = model.GhiChu
             };
 
@@ -456,47 +458,55 @@ namespace EcommerceMVC.Controllers
             return View(Cart);
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         [HttpGet]
         public IActionResult History()
         {
-            var customerId = HttpContext.User.Claims.FirstOrDefault(p => p.Type == MySetting.CLAIM_CUSTOMERID).Value;
-            var hoaDons = _context.HoaDons.AsQueryable();
+            var trangThais =  _context.TrangThais.ToList();
 
-            if(customerId != null)
+            var result = trangThais.Select(tt => new TrangThaiVM
             {
-                hoaDons = hoaDons.Where(hd => hd.MaKh == customerId);
+                MaTrangThai = tt.MaTrangThai,
+                TenTrangThai = tt.TenTrangThai,
+                MoTa = tt.MoTa
+            });
+            return View(result);
+        }
+
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
+        public IActionResult GetOrderByStatus(int id)
+        {
+            var claim = HttpContext.User.Claims.FirstOrDefault(p => p.Type == MySetting.CLAIM_CUSTOMERID);
+            var hoaDons = new List<HoaDonVM>();
+
+            if (claim != null)
+            {
+                var customerId = claim.Value;
+
+                hoaDons = _context.HoaDons.Where(hd => hd.MaTrangThai == id && hd.MaKh == customerId).Select(hd => new HoaDonVM
+                {
+                    MaHd = hd.MaHd,
+                    NgayDat = hd.NgayDat,
+                    NgayGiao = hd.NgayGiao,
+                    CachThanhToan = hd.CachThanhToan,
+                    MaTrangThai = hd.MaTrangThai,
+                }).ToList();
             }
 
-            var result = hoaDons.Select(hd => new HoaDonVM
-            {
-                MaHd = hd.MaHd,
-                NgayDat = hd.NgayDat,
-                NgayGiao = hd.NgayGiao,
-                CachThanhToan = hd.CachThanhToan,
-                MaTrangThai = hd.MaTrangThai
-            });
-
-            return View(result);
+            return PartialView("OrderByStatus", hoaDons);
         }
 
         public IActionResult ChangeStatus(int? id)
         {
             var hoaDon = _context.HoaDons.Find(id);
-
             if(hoaDon.MaTrangThai == 0)
             {
-                hoaDon.MaTrangThai = 1;
+                hoaDon.MaTrangThai = -1;
             }
-            else if(hoaDon.MaTrangThai == 1)
-            {
-                hoaDon.MaTrangThai = 2;
-                hoaDon.NgayGiao = DateTime.Now.AddDays(3);
-            }
-            else
+            else if(hoaDon.MaTrangThai == 2)
             {
                 hoaDon.MaTrangThai = 3;
-                hoaDon.NgayGiao = DateTime.Now.AddDays(3);
+                hoaDon.NgayGiao = DateTime.Now;
             }
 
             _context.Update(hoaDon);

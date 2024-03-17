@@ -1,0 +1,65 @@
+﻿@model IEnumerable<EcommerceMVC.Areas.Admin.Models.TrangThaiModel>
+
+@{
+    ViewData["Title"] = "Quản lý đơn đặt hàng";
+    Layout = "_LayoutAdmin";
+    var first = true;
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>
+                    QL đơn đặt hàng
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">QL đơn đặt hàng</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <!-- ./row -->
+        <div class="row">
+            <div class="col-12 col-sm-12">
+                <div class="card card-primary card-tabs">
+                    <div class="card-header p-0 pt-1">
+                        <ul class="nav nav-tabs" id="custom-tab" role="tablist">
+                            @foreach (var trangThai in Model)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @(first ? "active": "")" id="custom-@trangThai.MaTrangThai-tab" data-toggle="pill" href="#custom-@trangThai.MaTrangThai" role="tab" aria-controls="custom-@trangThai.MaTrangThai" aria-selected="true">@trangThai.TenTrangThai</a>
+                                </li>
+                                first = false;
+                            }
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="custom-tabContent">
+                            @foreach(var item in Model)
+                            {
+                                first = item.MaTrangThai == -1;
+                                <div class="tab-pane fade @(first ? "show active" : "")" id="custom-@item.MaTrangThai" role="tabpanel" aria-labelledby="custom-@item.MaTrangThai-tab">
+                                    @await Component.InvokeAsync("ListHoaDonByTrangThai", new {status = item.MaTrangThai})
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+<!-- /.content -->

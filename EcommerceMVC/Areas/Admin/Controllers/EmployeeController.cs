@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore;
 namespace EcommerceMVC.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(AuthenticationSchemes = "AdminAuth", Roles = "Admin")]
     public class EmployeeController : Controller
     {
         private readonly Ecommerce2024Context _context;
         private readonly IMapper _mapper;
-        private readonly string key = "123abc";
 
         public EmployeeController(Ecommerce2024Context context,IMapper mapper)
         {
@@ -59,12 +59,25 @@ namespace EcommerceMVC.Areas.Admin.Controllers
                     if (check == null)
                     {
                         var nhanVien = _mapper.Map<NhanVien>(model);
-                        nhanVien.MatKhau = model.MatKhau.ToMd5Hash(key);
+                        var listNV = _context.NhanViens.ToList();
 
-                        _context.NhanViens.Add(nhanVien);
-                        await _context.SaveChangesAsync();
+                        foreach(var item in listNV)
+                        {
+                            if(nhanVien.Email == item.Email)
+                            {
+                                ViewBag.ErrorRegister = "Email đã tồn tại";
+                                return View();
+                            }
+                            else
+                            {
+                                nhanVien.MatKhau = model.MatKhau.ToMd5Hash(MySetting.PASS_KEY);
 
-                        return RedirectToAction("Index", "Employee");
+                                _context.NhanViens.Add(nhanVien);
+                                await _context.SaveChangesAsync();
+
+                                return RedirectToAction("Index", "Employee");
+                            }
+                        }
                     }
                     else
                     {
@@ -122,7 +135,7 @@ namespace EcommerceMVC.Areas.Admin.Controllers
             if (nhanVien != null)
             {
                 nhanVien = _mapper.Map<NhanVien>(model);
-                nhanVien.MatKhau = model.MatKhau.ToMd5Hash(key);
+                nhanVien.MatKhau = model.MatKhau.ToMd5Hash(MySetting.PASS_KEY);
 
                 _context.NhanViens.Update(nhanVien);
                 await _context.SaveChangesAsync();

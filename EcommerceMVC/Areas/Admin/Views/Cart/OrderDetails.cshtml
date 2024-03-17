@@ -1,0 +1,88 @@
+﻿@model IEnumerable<EcommerceMVC.Areas.Admin.Models.ChiTietHdModel>
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+    Layout = "_LayoutAdmin";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>
+                    Chi tiết đơn hàng
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Cart">QL đơn đặt hàng</a></li>
+                    <li class="breadcrumb-item active">Chi tiết đơn hàng</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <a asp-action="Index" asp-controller="Cart"><i class="fa fa-arrow-left"></i> Trở lại</a>
+        <h1 class="mb-4 text-center align-items-center justify-content-center">Chi tiết đơn hàng: @ViewBag.MaHd</h1>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Mã chi tiết</th>
+                        <th scope="col">Tên sản phẩm</th>
+                        <th scope="col">Hình ảnh</th>
+                        <th scope="col">Đơn giá</th>
+                        <th scope="col">Số lượng</th>
+                        <th scope="col">Giảm giá</th>
+                        <th scope="col">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Count() < 0)
+                    {
+                        <tr>
+                            <td>Không có đơn hàng nào</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <p> @item.MaCT </p>
+                                </td>
+                                <td>
+                                    <p> @item.TenHh </p>
+                                </td>
+                                <td style="width:150px;">
+                                    <img src="~/Hinh/HangHoa/@item.Hinh" class="img-fluid w-50" alt="@item.TenHh" />
+                                </td>
+                                <td>
+                                    <p> @item.DonGia </p>
+                                </td>
+                                <td>
+                                    <p> @item.SoLuong </p>
+                                </td>
+                                <td>
+                                    <p> @item.GiamGia </p>
+                                </td>
+                                <td>
+                                    <p> @item.ThanhTien </p>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- /.container-fluid -->
+</section>
+<!-- /.content -->

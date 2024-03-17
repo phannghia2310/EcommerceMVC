@@ -1,0 +1,118 @@
+﻿
+@{
+    ViewData["Title"] = "Chat với khách hàng";
+    Layout = "_LayoutAdmin";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Chat với khách hàng</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="~/Admin/Home/Index">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Chat với khách hàng</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-4">
+            <!-- Danh sách liên hệ -->
+            <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action active">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">Người liên hệ 1</h5>
+                        <small>3 phút trước</small>
+                    </div>
+                    <div class="d-flex w-100 justify-content-between">
+                        <p class="mb-1">Tin nhắn cuối cùng</p>
+                        <small class="bg-danger fw-bold py-1 px-2 rounded">3</small>
+                    </div>
+                </a>
+                <!-- Thêm nhiều người liên hệ tại đây -->
+            </div>
+        </div>
+        <div class="col-8">
+            <!-- Khung chat -->
+            <div class="card">
+                <div class="card-header">Chat với: <span id="contactName">Người liên hệ 1</span></div>
+                <div class="card-body" id="chatMessages" style="height: 300px; overflow-y: scroll;">
+                    <!-- Tin nhắn chat sẽ xuất hiện ở đây -->
+                </div>
+                <div class="card-footer">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="messageInput" placeholder="Nhập tin nhắn">
+                        <button class="btn btn-primary" id="sendButton"><i class="far fa-paper-plane mr-2"></i>Gửi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+            if (document.getElementById("messageInput").value === "") {
+                document.getElementById('sendButton').disabled = true;
+            }
+
+            var userName;
+            fetch('/Admin/Chat/GetUser')
+                .then(response => response.json())
+                .then(data => { userName = data.name });
+            
+            var lastUser = null;
+            connection.on("ReceiveMessage", function (user, message) {
+                var msg = document.createElement("div");
+
+                var messageSpan = document.createElement("span");
+                messageSpan.textContent = message;
+                messageSpan.classList.add("message", "p-2", "rounded");
+                messageSpan.style.maxWidth = "75%";
+                messageSpan.style.wordWrap = "break-word";
+
+                if (user === userName) {
+                    messageSpan.classList.add('text-white', 'bg-primary', 'mr-3');
+                    msg.appendChild(messageSpan);
+                    msg.classList.add('d-flex', 'justify-content-start', 'flex-row-reverse', 'mb-1');
+                }
+                else {
+                    messageSpan.classList.add('text-dark', 'bg-light', 'ml-3');
+                    msg.appendChild(messageSpan);
+                    msg.classList.add('d-flex', 'justify-content-start', 'mb-1');
+                }
+
+                document.getElementById("chatMessages").appendChild(msg);
+
+                document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+                lastUser = user;
+            });
+
+            connection.start().then(function () {
+                document.getElementById('sendButton').disabled = false;
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            document.getElementById("sendButton").addEventListener("click", function (event) {
+                var user = userName; // Thay đổi này bằng tên người dùng thực tế
+                var message = document.getElementById("messageInput").value;
+                connection.invoke("SendMessage", user, message).catch(function (err) {
+                    return console.error(err.toString());
+                });
+                document.getElementById("messageInput").value = "";
+                event.preventDefault();
+            });
+        });
+    </script>
+}

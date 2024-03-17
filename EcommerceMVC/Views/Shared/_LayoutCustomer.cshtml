@@ -30,7 +30,7 @@
     @RenderSection("Sections", required: false)
 </head>
 <body>
-    @await Html.PartialAsync("_Loading");
+    @await Html.PartialAsync("_Loading")
 
     @await Html.PartialAsync("_Header")
 
@@ -40,6 +40,28 @@
 
     @await Html.PartialAsync("_Footer")
     
+    @* Chat *@
+    <a href="#" class="btn btn-outline-primary border-3 border-primary rounded-circle position-fixed d-flex justify-content-center align-items-center mb-5" style="right:30px; bottom:30px; width:45px; height:45px;" id="openChatButton">
+        <i class="fab fa-facebook-messenger"></i>
+    </a>
+
+    !-- Cửa sổ chat -->
+    <div class="card position-fixed m-3" style="width: 300px; right:70px; bottom: 10px; display: none; z-index:99;" id="chatWindow">
+        <div class="card-header bg-secondary text-white">
+            <i class="fas fa-circle fa-xs mr-2" style="color: #23d741;"></i> Chat với chúng tôi
+            <button type="button" class="btn-close float-end" id="closeChatButton"></button>
+        </div>
+        <div class="card-body" style="height: 300px; overflow-y: scroll;" id="chatMessages">
+            <!-- Nội dung chat ở đây -->
+        </div>
+        <div class="card-footer">
+            <div class="input-group">
+                <input type="text" class="form-control" id="messageInput" placeholder="Nhập tin nhắn">
+                <button class="btn btn-primary" id="sendButton">Gửi</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
 
@@ -59,6 +81,74 @@
             $("#search-button").click(function () {
                 let url = `/HangHoa/Search?query=` + $("#search-text").val();
                 window.location.href = url;
+            });
+        });
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+            if (document.getElementById("messageInput").value === "") {
+                document.getElementById('sendButton').disabled = true;
+            }
+
+            var userName;
+            fetch('/Home/GetUser')
+                .then(response => response.json())
+                .then(data => { userName = data.name });
+
+            var lastUser = null;
+            connection.on("ReceiveMessage", function (user, message) {
+                var msg = document.createElement("div");
+
+                var messageSpan = document.createElement("span");
+                messageSpan.textContent = message;
+                messageSpan.classList.add("message", "p-2", "rounded", "mw-75");
+                messageSpan.style.wordWrap = "break-word";
+
+                if (user === userName) {
+                    messageSpan.classList.add('text-white', 'bg-primary', 'mr-3');
+                    msg.appendChild(messageSpan);
+                    msg.classList.add('d-flex', 'justify-content-start', 'flex-row-reverse', 'mb-1');
+                }
+                else {
+                    messageSpan.classList.add('text-dark', 'bg-light', 'ml-3');
+                    msg.appendChild(messageSpan);
+                    msg.classList.add('d-flex', 'justify-content-start', 'mb-1');
+                }
+
+                document.getElementById("chatMessages").appendChild(msg);
+
+                document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+                lastUser = user;
+            });
+
+            connection.start().then(function () {
+                document.getElementById('sendButton').disabled = false;
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            document.getElementById("sendButton").addEventListener("click", function (event) {
+                var user = userName; // Thay đổi này bằng tên người dùng thực tế
+                var message = document.getElementById("messageInput").value;
+                connection.invoke("SendMessage", user, message).catch(function (err) {
+                    return console.error(err.toString());
+                });
+                document.getElementById("messageInput").value = "";
+                event.preventDefault();
+            });
+
+            document.getElementById("openChatButton").addEventListener("click", function () {
+                document.getElementById('chatWindow').style.display = 'block';
+                this.style.display = 'none';
+            });
+
+            document.getElementById("closeChatButton").addEventListener("click", function () {
+                document.getElementById('chatWindow').style.display = 'none';
+                document.getElementById('openChatButton').style.display = 'block';
             });
         });
     </script>

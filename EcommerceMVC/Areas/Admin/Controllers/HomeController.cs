@@ -1,12 +1,15 @@
 ﻿using EcommerceMVC.Areas.Admin.Models;
 using EcommerceMVC.Data;
+using EcommerceMVC.Helpers;
 using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceMVC.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(AuthenticationSchemes = "AdminAuth")]
     public class HomeController : Controller
     {
         private readonly Ecommerce2024Context _context;
@@ -16,7 +19,6 @@ namespace EcommerceMVC.Areas.Admin.Controllers
             _context = context;
         }
 
-        //[Area("Admin")]
         public IActionResult Index()
         {
             var Month = DateTime.Now.Month;
@@ -47,10 +49,13 @@ namespace EcommerceMVC.Areas.Admin.Controllers
                 tongHangHoa = HangHoa
             };
 
+            var adminId = HttpContext.User.Claims.SingleOrDefault(p => p.Type == MySetting.CLAIM_EMPLOYEEID).Value;
+            var nhanVien = _context.NhanViens.SingleOrDefault(nv => nv.MaNv == adminId);
+            ViewBag.EmployeeName = nhanVien.HoTen; 
+
             return View(data);
         }
 
-        //[Area("Admin")]
         [HttpPost]
         public List<object> DoanhThuTungMatHang()
         {
@@ -65,7 +70,6 @@ namespace EcommerceMVC.Areas.Admin.Controllers
             return data;
         }
 
-        //[Area("Admin")]
         [HttpPost]
         public List<object> DoanhThuTheoNam()
         {

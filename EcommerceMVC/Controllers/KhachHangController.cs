@@ -120,19 +120,19 @@ namespace EcommerceMVC.Controllers
             if (ModelState.IsValid)
             {
                 var khachHang = _context.KhachHangs.SingleOrDefault(kh => kh.MaKh == model.UserName);
-                if(khachHang == null)
+                if (khachHang == null)
                 {
                     ModelState.AddModelError("loi", "Không tồn tại khách hàng này.");
                 }
                 else
                 {
-                    if(!khachHang.HieuLuc)
+                    if (!khachHang.HieuLuc)
                     {
                         ModelState.AddModelError("loi", "Tài khoản đã bị khóa. Vui lòng liên hệ nhân viên CSKH.");
                     }
                     else
                     {
-                        if(khachHang.MatKhau != model.Password.ToMd5Hash(khachHang.RandomKey))
+                        if (khachHang.MatKhau != model.Password.ToMd5Hash(khachHang.RandomKey))
                         {
                             ModelState.AddModelError("loi", "Sai mật khẩu.");
                         }
@@ -146,13 +146,12 @@ namespace EcommerceMVC.Controllers
 
                                 //claim - role động
                                 new Claim(ClaimTypes.Role, "Customer"),
-                            }; 
+                            };
 
-                            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
+                            var scheme = HttpContext.Request.Path.StartsWithSegments("/Admin") ? "AdminAuth" : "CustomerAuth";
+                            var claimsIdentity = new ClaimsIdentity(claims, scheme);
                             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-                            await HttpContext.SignInAsync(claimsPrincipal);
+                            await HttpContext.SignInAsync(scheme, claimsPrincipal);
 
                             return Redirect("/");
                         }
@@ -172,8 +171,8 @@ namespace EcommerceMVC.Controllers
 
         public async Task<IActionResult> GoogleResponse(string returnUrl = "/")
         {
-
-            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            //var scheme = HttpContext.Request.Path.StartsWithSegments("/Admin") ? "AdminAuth" : "CustomerAuth";
+            var result = await HttpContext.AuthenticateAsync("CustomerAuth");
             if (result.Succeeded)
             {
                 var customerId = result.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString();
@@ -205,11 +204,9 @@ namespace EcommerceMVC.Controllers
                             new Claim(ClaimTypes.Role, "Customer"),
                         };
 
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
+                    var claimsIdentity = new ClaimsIdentity(claims, "CustomerAuth");
                     var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-                    await HttpContext.SignInAsync(claimsPrincipal);
+                    await HttpContext.SignInAsync("CustomerAuth", claimsPrincipal);
 
                     return Redirect("/");
                 }
@@ -219,7 +216,7 @@ namespace EcommerceMVC.Controllers
         }
         #endregion
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         [HttpGet]
         public IActionResult Profile()
         {
@@ -252,7 +249,7 @@ namespace EcommerceMVC.Controllers
             return View(result);
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         [HttpPost]
         public IActionResult Profile(KhachHangVM model, IFormFile Hinh)
         {
@@ -288,13 +285,13 @@ namespace EcommerceMVC.Controllers
         }
 
         #region DoiMatKhau
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         public IActionResult NhapMailXacThuc()
         {
             return View();
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         public IActionResult GuiMailXacThuc(KhachHangVM model)
         {
             var customerId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == MySetting.CLAIM_CUSTOMERID).Value;
@@ -318,7 +315,7 @@ namespace EcommerceMVC.Controllers
             return View("Loading");
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         [HttpGet]
         public IActionResult XacThucEmail(string token)
         {
@@ -339,6 +336,7 @@ namespace EcommerceMVC.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         public async Task<IActionResult> DoiMatKhau(KhachHangVM model, string newPassword, string rePassword)
         {
             var customerId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == MySetting.CLAIM_CUSTOMERID).Value;
@@ -366,7 +364,8 @@ namespace EcommerceMVC.Controllers
                         _context.Update(khachHang);
                         _context.SaveChanges();
 
-                        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                        var scheme = HttpContext.Request.Path.StartsWithSegments("/Admin") ? "AdminAuth" : "CustomerAuth";
+                        await HttpContext.SignOutAsync(scheme);
                         return RedirectToAction("DangNhap", "KhachHang");
                     }
                 }
@@ -376,10 +375,11 @@ namespace EcommerceMVC.Controllers
         }
         #endregion
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         public async Task<IActionResult> DangXuat()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var scheme = HttpContext.Request.Path.StartsWithSegments("/Admin") ? "AdminAuth" : "CustomerAuth";
+            await HttpContext.SignOutAsync(scheme);
             return Redirect("/");
         }
     }

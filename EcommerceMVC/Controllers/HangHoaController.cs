@@ -98,7 +98,7 @@ namespace EcommerceMVC.Controllers
             return View(result);
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "CustomerAuth")]
         [HttpPost]
         public IActionResult PostComment(DanhGiaVM model, int id)
         {

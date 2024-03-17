@@ -25,6 +25,7 @@ namespace EcommerceMVC.Helpers
             CreateMap<NhanVienModel, NhanVien>().ReverseMap();
             CreateMap<LoaiModel, Loai>().ReverseMap();
             CreateMap<HangHoaModel, HangHoa>().ReverseMap();
+            CreateMap<HoiDapModel, HoiDap>().ReverseMap();
         }
     }
 }

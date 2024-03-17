@@ -1,0 +1,15 @@
+{
+  "name": "ecommercemvc",
+  "version": "1.0.0",
+  "description": "Ecommerce 2024\r ASP.NET Core MVC 8",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@microsoft/signalr": "^8.0.0"
+  }
+}

@@ -1,8 +1,11 @@
 ﻿using EcommerceMVC.Data;
 using EcommerceMVC.Helpers;
+using EcommerceMVC.Hubs;
 using EcommerceMVC.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,18 +26,22 @@ builder.Services.AddSession(options =>
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSingleton<IVnPayService, VnPayService>();
+builder.Services.AddSingleton<IAuthenticationSchemeProvider, CustomAuthenticationSchemeProvider>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = "CustomerAuth";
 })
-    .AddCookie(options =>
+    .AddCookie("CustomerAuth", options =>
     {
         options.LoginPath = "/KhachHang/DangNhap";
-        options.AccessDeniedPath = "/AccessDenied";
+    })
+    .AddCookie("AdminAuth", options =>
+    {
+        options.LoginPath = "/Admin/Account/Login";
     })
     .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
     {
@@ -52,6 +59,8 @@ builder.Services.AddSingleton(x => new PaypalClient(
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 builder.Services.AddScoped<Ecommerce2024Context>();
+
+builder.Services.AddSignalR();
 
 builder.Services.AddControllersWithViews();
 
@@ -75,6 +84,8 @@ app.UseSession();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.MapControllerRoute(
     name: "MyArea",

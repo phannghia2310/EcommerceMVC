@@ -4,10 +4,13 @@ using EcommerceMVC.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using EcommerceMVC.Helpers;
 
 namespace EcommerceMVC.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(AuthenticationSchemes = "AdminAuth")]
     public class HoiDapController : Controller
     {
         private readonly Ecommerce2024Context _context;
@@ -53,6 +56,7 @@ namespace EcommerceMVC.Areas.Admin.Controllers
                 Email = hoiDap.Email,
                 CauHoi = hoiDap.CauHoi,
                 TraLoi = hoiDap.TraLoi,
+                NgayDua = hoiDap.NgayDua,
                 MaNv = hoiDap.MaNv,
                 MaNvNavigation = hoiDap.MaNvNavigation
             };
@@ -72,7 +76,9 @@ namespace EcommerceMVC.Areas.Admin.Controllers
             if (hoiDap != null)
             {
                 hoiDap = _mapper.Map<HoiDap>(model);
-                hoiDap.MaNv = "";
+                var adminId = HttpContext.User.Claims.FirstOrDefault(p => p.Type == MySetting.CLAIM_EMPLOYEEID).Value;
+                hoiDap.NgayDua = DateTime.Now;
+                hoiDap.MaNv = adminId;
 
                 _context.HoiDaps.Update(hoiDap);
                 await _context.SaveChangesAsync();
@@ -95,7 +101,6 @@ namespace EcommerceMVC.Areas.Admin.Controllers
 
             _context.HoiDaps.Remove(hoiDap);
             await _context.SaveChangesAsync();
-
 
             return RedirectToAction("Index", "HoiDap");
         }

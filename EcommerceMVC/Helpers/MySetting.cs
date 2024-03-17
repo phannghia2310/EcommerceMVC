@@ -5,6 +5,8 @@
         public static string CART_KEY = "MYCART";
         public static string PAYMENT_KEY = "PAYMENT";
         public static string CLAIM_CUSTOMERID = "CustomerID";
+        public static string CLAIM_EMPLOYEEID = "EmployeeID";
+        public static string PASS_KEY = "123abc";
     }
 
     public class PaymentType()

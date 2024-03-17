@@ -1,10 +1,12 @@
 ﻿using EcommerceMVC.Data;
 using EcommerceMVC.Services;
 using EcommerceMVC.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Mail;
 using System.Net.NetworkInformation;
+using System.Security.Claims;
 
 namespace EcommerceMVC.Controllers
 {
@@ -55,6 +57,24 @@ namespace EcommerceMVC.Controllers
             {
                 return Content("Người dùng đã đăng xuất.");
             }
+        }
+
+        [HttpGet]
+        public IActionResult GetUser()
+        {
+            var name = "";
+            if (User.Identity.IsAuthenticated)
+            {
+                name = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+            }
+            else
+            {
+                var random = new Random();
+                name = "Customer" + random.Next(5, 5);
+            }
+
+            return Ok(new { name = name });
+            
         }
 
         [Route("/404")]
