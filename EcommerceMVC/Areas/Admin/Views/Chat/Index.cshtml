@@ -25,16 +25,6 @@
         <div class="col-4">
             <!-- Danh sách liên hệ -->
             <div class="list-group">
-                <a href="#" class="list-group-item list-group-item-action active">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">Người liên hệ 1</h5>
-                        <small>3 phút trước</small>
-                    </div>
-                    <div class="d-flex w-100 justify-content-between">
-                        <p class="mb-1">Tin nhắn cuối cùng</p>
-                        <small class="bg-danger fw-bold py-1 px-2 rounded">3</small>
-                    </div>
-                </a>
                 <!-- Thêm nhiều người liên hệ tại đây -->
             </div>
         </div>
@@ -60,59 +50,163 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+            fetch('/Admin/Chat/GetContactList')
+                .then(response => response.json())
+                .then(contacts => {
+                    var listGroup = document.querySelector('.list-group');
 
-            if (document.getElementById("messageInput").value === "") {
-                document.getElementById('sendButton').disabled = true;
+                    contacts.forEach(function (contact) {
+                        var newItem = document.createElement('a');
+                        newItem.classList.add('list-group-item', 'list-group-item-action', 'mb-1');
+
+                        var unReadMessagesCount = '';
+                        if (contact.unreadMessagesCount > 0) {
+                            unReadMessagesCount = `<small class="bg-danger fw-bold py-1 px-2 rounded">${contact.unreadMessagesCount}</small>`;
+                        }
+                        newItem.innerHTML = `
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h5 class="mb-1">${contact.contact}</h5>
+                                                <small>${timeSince(new Date(contact.lastMessageTimestamp))}</small>
+                                            </div>
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <p class="mb-1">${contact.lastMessage}</p>
+                                                ${unReadMessagesCount}
+                                            </div>
+                                        `;
+
+                        newItem.addEventListener('click', function () {
+                            fetch('/Admin/Chat/MarkAsRead', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    FromUser: contact.contact
+                                })
+                            }).catch(function (err) {
+                                return console.error(err.toString());
+                            });
+
+                            fetch('/Admin/Chat/GetMessages', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    FromUser: contact.contact
+                                })
+                            }).then(response => response.json())
+                                .then(messages => {
+                                    var chatMessages = document.querySelector('#chatMessages');
+                                    chatMessages.innerHTML = '';
+
+                                    messages.forEach(function (message) {
+                                        var msg = document.createElement("div");
+
+                                        var messageSpan = document.createElement("span");
+                                        messageSpan.textContent = message.message1;
+                                        messageSpan.classList.add("message", "p-2", "rounded");
+                                        messageSpan.style.maxWidth = "75%";
+                                        messageSpan.style.wordWrap = "break-word";
+
+                                        if (message.fromUser === 'Admin') {
+                                            messageSpan.classList.add('text-white', 'bg-primary', 'mr-3');
+                                            msg.appendChild(messageSpan);
+                                            msg.classList.add('d-flex', 'justify-content-start', 'flex-row-reverse', 'mb-1');
+                                        }
+                                        else {
+                                            messageSpan.classList.add('text-dark', 'bg-light', 'ml-3');
+                                            msg.appendChild(messageSpan);
+                                            msg.classList.add('d-flex', 'justify-content-start', 'mb-1');
+                                        }
+
+                                        chatMessages.appendChild(msg);
+                                        chatMessages.scrollTop == chatMessages.scrollHeight;
+                                    });
+                                });
+
+                            var contactName = document.querySelector('#contactName');
+                            contactName.textContent = contact.contact;
+
+                            document.querySelectorAll('.list-group .list-group-item').forEach(function (item) {
+                                item.classList.remove('active');
+                            });
+                            this.classList.add('active');
+                        });
+
+                        listGroup.appendChild(newItem);
+
+                    });
+                });
+        });
+
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+        if (document.getElementById("messageInput").value === "") {
+            document.getElementById('sendButton').disabled = true;
+        }
+
+        connection.on("ReceiveMessage", function (user, message) {
+            var msg = document.createElement("div");
+
+            var messageSpan = document.createElement("span");
+            messageSpan.textContent = message;
+            messageSpan.classList.add("message", "p-2", "rounded");
+            messageSpan.style.maxWidth = "75%";
+            messageSpan.style.wordWrap = "break-word";
+
+            if (user === 'Admin') {
+                messageSpan.classList.add('text-white', 'bg-primary', 'mr-3');
+                msg.appendChild(messageSpan);
+                msg.classList.add('d-flex', 'justify-content-start', 'flex-row-reverse', 'mb-1');
+            }
+            else {
+                messageSpan.classList.add('text-dark', 'bg-light', 'ml-3');
+                msg.appendChild(messageSpan);
+                msg.classList.add('d-flex', 'justify-content-start', 'mb-1');
             }
 
-            var userName;
-            fetch('/Admin/Chat/GetUser')
-                .then(response => response.json())
-                .then(data => { userName = data.name });
-            
-            var lastUser = null;
-            connection.on("ReceiveMessage", function (user, message) {
-                var msg = document.createElement("div");
+            document.getElementById("chatMessages").appendChild(msg);
 
-                var messageSpan = document.createElement("span");
-                messageSpan.textContent = message;
-                messageSpan.classList.add("message", "p-2", "rounded");
-                messageSpan.style.maxWidth = "75%";
-                messageSpan.style.wordWrap = "break-word";
+            document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+        });
 
-                if (user === userName) {
-                    messageSpan.classList.add('text-white', 'bg-primary', 'mr-3');
-                    msg.appendChild(messageSpan);
-                    msg.classList.add('d-flex', 'justify-content-start', 'flex-row-reverse', 'mb-1');
-                }
-                else {
-                    messageSpan.classList.add('text-dark', 'bg-light', 'ml-3');
-                    msg.appendChild(messageSpan);
-                    msg.classList.add('d-flex', 'justify-content-start', 'mb-1');
-                }
+        connection.start().then(function () {
+            document.getElementById('sendButton').disabled = false;
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
 
-                document.getElementById("chatMessages").appendChild(msg);
+        document.getElementById("sendButton").addEventListener("click", function (event) {
+            var user = 'Admin'; // Thay đổi này bằng tên người dùng thực tế
+            var message = document.getElementById("messageInput").value;
+            var contact = document.querySelector('#contactName').textContent;
+            var now = new Date();
+            now.setHours(now.getHours() + 7);
 
-                document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
-                lastUser = user;
-            });
-
-            connection.start().then(function () {
-                document.getElementById('sendButton').disabled = false;
-            }).catch(function (err) {
+            connection.invoke("SendMessage", user, message).catch(function (err) {
                 return console.error(err.toString());
             });
 
-            document.getElementById("sendButton").addEventListener("click", function (event) {
-                var user = userName; // Thay đổi này bằng tên người dùng thực tế
-                var message = document.getElementById("messageInput").value;
-                connection.invoke("SendMessage", user, message).catch(function (err) {
-                    return console.error(err.toString());
-                });
-                document.getElementById("messageInput").value = "";
-                event.preventDefault();
+            fetch('/Admin/Chat/SaveMessage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    FromUser: 'Admin',
+                    ToUser: contact,
+                    Message1: message,
+                    Timestamp: now,
+                    IsRead: 1
+                })
+            }).catch(function (err) {
+                return console.log(err.toString());
             });
+
+            document.getElementById("messageInput").value = "";
+            event.preventDefault();
         });
+        // });
     </script>
 }

@@ -17,6 +17,7 @@ namespace EcommerceMVC.Helpers
             CreateMap<ChiTietHdVM, ChiTietHd>().ReverseMap();
             CreateMap<DanhGiaVM, YeuThich>().ReverseMap();
             CreateMap<HoiDapVM, HoiDap>().ReverseMap();
+            CreateMap<MessageVM, Message>().ReverseMap();
 
             //Admin
             CreateMap<NhaCungCapModel, NhaCungCap>().ReverseMap();   
@@ -26,6 +27,7 @@ namespace EcommerceMVC.Helpers
             CreateMap<LoaiModel, Loai>().ReverseMap();
             CreateMap<HangHoaModel, HangHoa>().ReverseMap();
             CreateMap<HoiDapModel, HoiDap>().ReverseMap();
+            CreateMap<MessageModel, Message>().ReverseMap();
         }
     }
 }

@@ -27,6 +27,8 @@ public partial class Ecommerce2024Context : DbContext
 
     public virtual DbSet<Loai> Loais { get; set; }
 
+    public virtual DbSet<Message> Messages { get; set; }
+
     public virtual DbSet<NhaCungCap> NhaCungCaps { get; set; }
 
     public virtual DbSet<NhanVien> NhanViens { get; set; }
@@ -203,6 +205,18 @@ public partial class Ecommerce2024Context : DbContext
             entity.Property(e => e.Hinh).HasMaxLength(50);
             entity.Property(e => e.TenLoai).HasMaxLength(50);
             entity.Property(e => e.TenLoaiAlias).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Message>(entity =>
+        {
+            entity.ToTable("Message");
+
+            entity.Property(e => e.FromUser).HasMaxLength(50);
+            entity.Property(e => e.Message1)
+                .HasMaxLength(255)
+                .HasColumnName("Message");
+            entity.Property(e => e.Timestamp).HasColumnType("datetime");
+            entity.Property(e => e.ToUser).HasMaxLength(50);
         });
 
         modelBuilder.Entity<NhaCungCap>(entity =>

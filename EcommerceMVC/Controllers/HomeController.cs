@@ -1,4 +1,5 @@
-﻿using EcommerceMVC.Data;
+﻿using AutoMapper;
+using EcommerceMVC.Data;
 using EcommerceMVC.Services;
 using EcommerceMVC.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -13,12 +14,12 @@ namespace EcommerceMVC.Controllers
     public class HomeController : Controller
     {
         private readonly Ecommerce2024Context _context;
-        private readonly IEmailSender _emailSender;
+        private readonly IMapper _mapper;
 
-        public HomeController(Ecommerce2024Context context, IEmailSender emailSender)
+        public HomeController(Ecommerce2024Context context, IMapper mapper)
         {
             _context = context;
-            _emailSender = emailSender;
+            _mapper = mapper;
         }
 
         public IActionResult Index()
@@ -70,11 +71,33 @@ namespace EcommerceMVC.Controllers
             else
             {
                 var random = new Random();
-                name = "Customer" + random.Next(5, 5);
+                name = "Customer" + random.Next(1000, 9999);
             }
 
-            return Ok(new { name = name });
-            
+            return Ok(new { name = name }); 
+        }
+
+        [HttpPost]
+        [Route("/Home/SaveMessage")]
+        public async Task<IActionResult> SaveMessage([FromBody] MessageVM model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var message = _mapper.Map<Message>(model);
+                    _context.Messages.Add(message);
+                    await _context.SaveChangesAsync();
+
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"Lỗi: {ex.Message}");
+                }
+            }
+
+            return View(model);
         }
 
         [Route("/404")]

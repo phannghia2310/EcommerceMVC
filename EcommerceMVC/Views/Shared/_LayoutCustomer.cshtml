@@ -134,9 +134,29 @@
             document.getElementById("sendButton").addEventListener("click", function (event) {
                 var user = userName; // Thay đổi này bằng tên người dùng thực tế
                 var message = document.getElementById("messageInput").value;
+                var now = new Date();
+                now.setHours(now.getHours() + 7);
+
                 connection.invoke("SendMessage", user, message).catch(function (err) {
                     return console.error(err.toString());
                 });
+
+                fetch('/Home/SaveMessage', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        FromUser: user,
+                        ToUser: 'Admin',
+                        Message1: message,
+                        Timestamp: now,
+                        IsRead: 0
+                    })
+                }).catch(function (err) {
+                    return console.log(err.toString());
+                });
+
                 document.getElementById("messageInput").value = "";
                 event.preventDefault();
             });

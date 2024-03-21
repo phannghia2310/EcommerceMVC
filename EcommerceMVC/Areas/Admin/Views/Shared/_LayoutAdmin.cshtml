@@ -255,7 +255,6 @@
         });
     </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
     <script>
         // Hàm để tính toán khoảng thời gian đã trôi qua
         function timeSince(date) {
@@ -283,56 +282,49 @@
             return "Vừa xong";
         }
 
-        // Kết nối với máy chủ thông qua SignalR
-        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+        document.addEventListener("DOMContentLoaded", function () {
+            // Lấy số lượng tin nhắn chưa đọc từ cơ sở dữ liệu
+            fetch('/Admin/Chat/GetUnreadMessagesCount')
+                .then(response => response.json())
+                .then(unreadMessagesCount => {
+                    var badge = document.querySelector('.navbar-badge');
+                    badge.textContent = unreadMessagesCount;
+                });
 
-        var userName;
-        fetch('/Admin/Chat/GetUser')
-            .then(response => response.json())
-            .then(data => { userName = data.name });
+            fetch('/Admin/Chat/GetUnreadMessages')
+                .then(response => response.json())
+                .then(unreadMessages => {
+                    var dropdownMenu = document.querySelector('.dropdown-menu');
 
-        // Lắng nghe sự kiện tin nhắn mới
-        connection.on("ReceiveMessage", function (user, message) {
-            if (user !== userName) {
-                // Cập nhật số lượng tin nhắn chưa đọc
-                var badge = document.querySelector('.navbar-badge');
-                badge.textContent = parseInt(badge.textContent) + 1;
-
-                // Thêm tin nhắn mới vào dropdown menu
-                var dropdownMenu = document.querySelector('.dropdown-menu');
-                var newItem = document.createElement('li');
-                newItem.innerHTML = `
-                        <a class="dropdown-item" href="#">
-                            <div class="media">
-                                <div class="media-body">
-                                    <h3 class="dropdown-item-title">
-                                        ${user}
-                                    </h3>
-                                    <p class="text-sm">${message}</p>
-                                    <p class="text-sm text-muted"><i class="fa fa-clock mr-1"></i> <span class="time">Vừa xong</span></p>
+                    unreadMessages.forEach(function (message) {
+                        var newItem = document.createElement('li');
+                        newItem.innerHTML = `
+                            <a class="dropdown-item" href="/Admin/Chat/Index">
+                                <div class="media">
+                                    <div class="media-body">
+                                        <h3 class="dropdown-item-title">
+                                            ${message.fromUser}
+                                        </h3>
+                                        <p class="text-sm">${message.message1}</p>
+                                        <p class="text-sm text-muted"><i class="fa fa-clock mr-1"></i> ${timeSince(new Date(message.timestamp))}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
-                        <div class="dropdown-divider"></div>
-                `;
+                            </a>
+                            <div class="dropdown-divider"></div>
+                        `;
 
-                // Cập nhật thời gian sau mỗi phút
-                var timeElement = newItem.querySelector('.time');
-                var messageTime = new Date();
-                setInterval(function () {
-                    timeElement.textContent = timeSince(messageTime);
-                    console.log(timeElement);
-                }, 60000); // 60000 ms = 1 phút
+                        // Cập nhật thời gian sau mỗi phút
+                        var timeElement = newItem.querySelector('.time');
+                        var messageTime = new Date();
+                        setInterval(function () {
+                            timeElement.textContent = timeSince(messageTime);
+                            console.log(timeElement);
+                        }, 60000); // 60000 ms = 1 phút
 
-                dropdownMenu.insertBefore(newItem, dropdownMenu.firstChild);
-            }
+                        dropdownMenu.insertBefore(newItem, dropdownMenu.firstChild);
+                    });
+                });
         });
-
-        // Bắt đầu kết nối
-        connection.start().catch(function (err) {
-            return console.error(err.toString());
-        });
-
     </script>
 </body>
 </html>
