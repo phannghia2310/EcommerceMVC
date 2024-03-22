@@ -92,7 +92,7 @@ namespace EcommerceMVC.Controllers
                 ChiTiet = data.MoTa ?? string.Empty,
                 DonGia = data.DonGia ?? 0,
                 DiemDanhGia = Convert.ToInt32(diemTB),
-                SoLuongTon = 10
+                SoLuongTon = data.SoLuongTon
             };
 
             return View(result);
@@ -105,18 +105,37 @@ namespace EcommerceMVC.Controllers
             if(ModelState.IsValid)
             {
                 var customerId = HttpContext.User.Claims.FirstOrDefault(kh => kh.Type == MySetting.CLAIM_CUSTOMERID).Value;
-                
-                var danhGia = _mapper.Map<YeuThich>(model);
-                danhGia.MaKh = customerId;
-                danhGia.MaHh = id;
-                danhGia.NgayChon = DateTime.Now;
-                danhGia.DiemDanhGia = model.DiemDanhGia;
-                danhGia.MoTa = model.MoTa;
-                danhGia.MaKhNavigation = _context.KhachHangs.FirstOrDefault(kh => kh.MaKh == customerId);
-                danhGia.MaHhNavigation = _context.HangHoas.FirstOrDefault(hh => hh.MaHh == id);
+                var donHang = _context.HoaDons.Where(hd => hd.MaKh == customerId && hd.MaTrangThai == 3).ToList();
 
-                _context.YeuThiches.Add(danhGia);
-                _context.SaveChanges();
+                foreach(var item in donHang)
+                {
+                    var ctdh = _context.ChiTietHds.Where(ct => ct.MaHd == item.MaHd).ToList();
+                    foreach(var ct in ctdh)
+                    {
+                        if(ct.MaHh == id)
+                        {
+                            var danhGia = _mapper.Map<YeuThich>(model);
+                            danhGia.MaKh = customerId;
+                            danhGia.MaHh = id;
+                            danhGia.NgayChon = DateTime.Now;
+                            danhGia.DiemDanhGia = model.DiemDanhGia;
+                            danhGia.MoTa = model.MoTa;
+                            danhGia.MaKhNavigation = _context.KhachHangs.FirstOrDefault(kh => kh.MaKh == customerId);
+                            danhGia.MaHhNavigation = _context.HangHoas.FirstOrDefault(hh => hh.MaHh == id);
+
+                            _context.YeuThiches.Add(danhGia);
+                            _context.SaveChanges();
+                        }
+                        else
+                        {
+                            TempData["ErrorComment"] = "Bạn chưa bao giờ đặt sản phẩm này nên không thể viết đánh giá.";
+                            TempData["ProductId"] = id;
+                            return RedirectToAction("Detail", "HangHoa", new { id = id });
+                        }
+                    }
+                }
+                
+                
             }
 
             return RedirectToAction("Detail", "HangHoa", new {id = id});

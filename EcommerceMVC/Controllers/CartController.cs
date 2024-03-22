@@ -36,6 +36,28 @@ namespace EcommerceMVC.Controllers
 
         public IActionResult AddToCart(int id, int quantity = 1)
         {
+            var product = _context.HangHoas.SingleOrDefault(p => p.MaHh == id);
+            if(product == null)
+            {
+                return NotFound();
+            }
+            
+            if(product.SoLuongTon == 0)
+            {
+                TempData["ErrorMessage"] = "Sản phẩm hiện đang hết hàng.";
+                TempData["ProductId"] = product.MaHh;
+                return RedirectToAction("Detail", "HangHoa", new {id = id});
+            }
+            else
+            {
+                if(quantity > product.SoLuongTon)
+                {
+                    TempData["ErrorMessage"] = $"Số lượng đặt vượt quá số lượng tồn. Số lượng tồn hiện tại là {product.SoLuongTon}";
+                    TempData["ProductId"] = product.MaHh;
+                    return RedirectToAction("Detail", "HangHoa", new { id = id });
+                }
+            }
+
             var gioHang = Cart;
             var item = gioHang.SingleOrDefault(p => p.MaHh == id);
             if (item == null)
@@ -112,6 +134,20 @@ namespace EcommerceMVC.Controllers
                 return Redirect("/");
             }
 
+            foreach (var item in gioHang)
+            {
+                var product = _context.HangHoas.SingleOrDefault(p => p.MaHh == item.MaHh);
+                if (product == null)
+                {
+                    return NotFound();
+                }
+                if (item.SoLuong > product.SoLuongTon)
+                {
+                    TempData["ErrorMessage"] = $"Số lượng sản phẩm vượt quá số lượng tồn. SLT: {product.SoLuongTon}";
+                    TempData["ProductId"] = item.MaHh;
+                    return RedirectToAction("Index");
+                }
+            }
             ViewBag.PaypalClientId = _paypalClient.ClientId;
             return  View(Cart);
         }
@@ -182,7 +218,16 @@ namespace EcommerceMVC.Controllers
                             MaHh = item.MaHh,
                             MaHhNavigation = _context.HangHoas.FirstOrDefault(hh => hh.MaHh == item.MaHh),
                             GiamGia = 0
-                        }); ;
+                        });
+
+                        var product = _context.HangHoas.SingleOrDefault(p => p.MaHh == item.MaHh);
+                        if(product == null)
+                        {
+                            return NotFound();
+                        }
+
+                        product.SoLuongTon = product.SoLuongTon - item.SoLuong;
+                        _context.HangHoas.Update(product);
                     }
 
                     _context.AddRange(cthds);

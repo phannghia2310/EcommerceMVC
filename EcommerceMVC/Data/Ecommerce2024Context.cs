@@ -76,6 +76,7 @@ public partial class Ecommerce2024Context : DbContext
 
             entity.Property(e => e.MaHh).HasColumnName("MaHH");
             entity.Property(e => e.DonGia).HasDefaultValue(0.0);
+            entity.Property(e => e.SoLuongTon).HasDefaultValue(0);
             entity.Property(e => e.Hinh).HasMaxLength(50);
             entity.Property(e => e.MaNcc)
                 .HasMaxLength(50)

@@ -58,6 +58,11 @@
                             <span asp-validation-for="@Model.DonGia" class="text-danger"></span>
                         </div>
                         <div class="form-group">
+                            <label asp-for="@Model.SoLuongTon"></label>
+                            <input type="text" asp-for="@Model.SoLuongTon" class="form-control" />
+                            <span asp-validation-for="@Model.SoLuongTon" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
                             <label class="form-label my-3" asp-for="@Model.Hinh"></label>
                             <input type="file" name="Hinh" class="form-control" asp-for="@Model.Hinh" onchange="loadImage(event)">
                         </div>
@@ -70,11 +75,6 @@
                             <label asp-for="@Model.GiamGia"></label>
                             <input type="text" asp-for="@Model.GiamGia" class="form-control" />
                             <span asp-validation-for="@Model.GiamGia" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="@Model.SoLanXem"></label>
-                            <input type="text" asp-for="@Model.SoLanXem" class="form-control" />
-                            <span asp-validation-for="@Model.SoLanXem" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="@Model.MoTa"></label>

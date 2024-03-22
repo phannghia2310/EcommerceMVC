@@ -42,10 +42,10 @@
                                         <th>Loại</th>
                                         <th>Mô tả đơn vị</th>
                                         <th>Đơn giá</th>
+                                        <th>Số lượng tồn</th>
                                         <th>Hình</th>
                                         <th>Ngày sản xuất</th>
                                         <th>Giảm giá</th>
-                                        <th>Số lần xem</th>
                                         <th>Mô tả</th>
                                         <th>Nhà cung cấp</th>
                                     </tr>
@@ -59,10 +59,17 @@
                                             <td>@item.MaLoaiNavigation.TenLoai</td>
                                             <td>@item.MoTaDonVi</td>
                                             <td>@item.DonGia</td>
+                                            @if(item.SoLuongTon <= 10)
+                                            {
+                                                <td class="text-danger">@item.SoLuongTon</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@item.SoLuongTon</td>
+                                            }
                                             <td><img src="~/Hinh/HangHoa/@item.Hinh" style="width: 70px; height: 40px;" alt="@item.TenHh"></img></td>
                                             <td>@item.NgaySx</td>
                                             <td>@item.GiamGia</td>
-                                            <td>@item.SoLanXem</td>
                                             <td>@item.MoTa</td>
                                             <td>@item.MaNccNavigation.TenCongTy</td>
                                             <td>

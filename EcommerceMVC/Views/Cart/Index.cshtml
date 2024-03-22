@@ -64,6 +64,10 @@
                                         </button>
                                     </div>
                                 </div>
+                                @if(TempData["ErrorMessage"] != null && TempData["ProductId"] != null && TempData["ProductId"].ToString() == item.MaHh.ToString())
+                                {
+                                    <div class="text-danger fst-italic ">@TempData["ErrorMessage"]</div>
+                                }
                             </td>
                             <td>
                                 <p id="thanh-tien" class="mb-0 mt-4">@(item.DonGia * item.SoLuong) $</p>

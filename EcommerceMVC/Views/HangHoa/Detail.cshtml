@@ -45,9 +45,22 @@
                                 }
                             }
                         </div>
+                        <div>Số lượng sản phẩm hiện có: 
+                            @if(Model.SoLuongTon <= 10 && Model.SoLuongTon > 0)
+                            {
+                                <span class="text-danger fst-italic">@Model.SoLuongTon (Sản phẩm sắp hết)</span>
+                            }
+                            else if(Model.SoLuongTon <= 0)
+                            {
+                                <span class="text-danger fst-italic">0 (Sản phẩm đã hết)</span>
+                            }
+                            else
+                            {
+                                <span class="fst-italic">@Model.SoLuongTon</span>
+                            }
+                        </div>
                         <p class="mb-4">@Model.MoTaNgan</p>
                         <form asp-action="AddToCart" asp-controller="Cart" asp-route-id="@Model.MaHangHoa">
-
                             <div class="input-group quantity mb-5" style="width: 100px;">
                                 <div class="input-group-btn">
                                     <button class="btn btn-sm btn-minus rounded-circle bg-light border" type="button">
@@ -62,6 +75,10 @@
                                 </div>
                             </div>
                             <button href="#" class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Thêm vào giỏ</button>
+                            @if (TempData["ErrorMessage"] != null)
+                            {
+                                <div class="text-danger fst-italic">@TempData["ErrorMessage"]</div>
+                            }
                         </form>
                     </div>
                     <div class="col-lg-12">
@@ -102,6 +119,12 @@
                         else
                         {
                             <div class="row g-4">
+                                @if(TempData["ErrorComment"] != null && TempData["ProductId"] != null && TempData["ProductId"].ToString() == Model.MaHangHoa.ToString())
+                                {
+                                    <div class="col-lg-12">
+                                        <span class="text-danger fst-italic">@TempData["ErrorComment"]</span>
+                                    </div>
+                                } 
                                 <div class="col-lg-12">
                                     <div class="border-bottom rounded my-4">
                                         <textarea name="MoTa" id="MoTa" class="form-control border-0" cols="30" rows="8" placeholder="Viết đánh giá *" spellcheck="false"></textarea>

@@ -23,6 +23,9 @@ namespace EcommerceMVC.Areas.Admin.Models
         [Display(Name = "Đơn giá")]
         public double? DonGia { get; set; }
 
+        [Display(Name = "Số lượng tồn")]
+        public double? SoLuongTon { get; set; }
+
         [Display(Name = "Hình")]
         public string? Hinh { get; set; }
 
@@ -31,9 +34,6 @@ namespace EcommerceMVC.Areas.Admin.Models
 
         [Display(Name = "Giảm giá")]
         public double GiamGia { get; set; }
-
-        [Display(Name = "Số lần xem")]
-        public int SoLanXem { get; set; }
 
         [Display(Name = "Mô tả")]
         public string? MoTa { get; set; }
