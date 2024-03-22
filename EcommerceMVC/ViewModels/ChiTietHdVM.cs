@@ -1,4 +1,6 @@
-﻿namespace EcommerceMVC.ViewModels
+﻿using EcommerceMVC.Data;
+
+namespace EcommerceMVC.ViewModels
 {
     public class ChiTietHdVM
     {
@@ -9,5 +11,9 @@
         public int SoLuong { get; set; }
         public double GiamGia {  get; set; }
         public double ThanhTien => (DonGia * SoLuong) - (DonGia * GiamGia);
+
+        public virtual HoaDon MaHdNavigation { get; set; }
+
+        public virtual HangHoa MaHhNavigation { get; set; }
     }
 }

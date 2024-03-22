@@ -313,7 +313,8 @@ namespace EcommerceMVC.Controllers
                             SoLuong = item.SoLuong,
                             DonGia = item.DonGia,
                             MaHh = item.MaHh,
-                            GiamGia = 0
+                            GiamGia = 0,
+                            MaHhNavigation = _context.HangHoas.FirstOrDefault(hh => hh.MaHh == item.MaHh),
                         });
                     }
 
@@ -401,7 +402,7 @@ namespace EcommerceMVC.Controllers
                 CachThanhToan = "VNPAY",
                 CachVanChuyen = "GRAB",
                 MaTrangThai = 1,
-                GhiChu = model.GhiChu
+                GhiChu = model.GhiChu,
             };
 
             _context.Database.BeginTransaction();
@@ -420,7 +421,8 @@ namespace EcommerceMVC.Controllers
                         SoLuong = item.SoLuong,
                         DonGia = item.DonGia,
                         MaHh = item.MaHh,
-                        GiamGia = 0
+                        GiamGia = 0,
+                        MaHhNavigation = _context.HangHoas.FirstOrDefault(hh => hh.MaHh == item.MaHh),
                     });
                 }
 

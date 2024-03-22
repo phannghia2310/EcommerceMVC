@@ -1,4 +1,6 @@
-﻿namespace EcommerceMVC.ViewModels
+﻿using EcommerceMVC.Data;
+
+namespace EcommerceMVC.ViewModels
 {
     public class CartItem
     {
